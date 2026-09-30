@@ -345,7 +345,7 @@
                 minus_life: "-1 命",
                 bounce_mod: "⚡ 彈跳模式啟動！生詞會反彈",
                 bomb_mod: "💣 注意炸彈！切到會扣命！",
-                hard_mod: "🔥 忍者大師！難度增加！",
+                hard_mod: "🔥 忍者大師！速度加快！",
                 uncollected: "未收集",
                 ready: "準備...",
                 win_speech: "太棒了，所有生詞都收集到了，過關！",
@@ -406,7 +406,7 @@
                 minus_life: "-1 Life",
                 bounce_mod: "⚡ Bounce Mode! Words will bounce",
                 bomb_mod: "💣 Watch out for bombs!",
-                hard_mod: "🔥 Ninja Master! Difficulty increased!",
+                hard_mod: "🔥 Ninja Master! Speed up!",
                 uncollected: "Locked",
                 ready: "Ready...",
                 win_speech: "Great job, all words collected, level passed!",
@@ -434,6 +434,9 @@
         };
 
         function t(key) {
+            // Fix: If the key is 'lesson_suffix' and the language is 'en', explicitly return an empty string.
+            // Otherwise, normal fallback logic applies.
+            if (currentLang === 'en' && key === 'lesson_suffix') return '';
             return translations[currentLang][key] || key;
         }
 
