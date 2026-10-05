@@ -753,13 +753,56 @@
         window.addEventListener('resize', resize);
         resize();
 
+        let preferredVoice = null;
+        function loadVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length === 0) return;
+
+            // 優先選擇聽起來比較自然、像真人的神經網路語音 (Google, Microsoft 等)
+            const preferredVoiceNames = [
+                'Google 國語',
+                'Google Mandarin',
+                'Microsoft Yating',
+                'Microsoft Hanhan',
+                'Microsoft Xiaoxiao',
+                'Mei-Jia',
+                'Sin-Ji'
+            ];
+
+            for (let name of preferredVoiceNames) {
+                let voice = voices.find(v => v.name.includes(name));
+                if (voice) {
+                    preferredVoice = voice;
+                    return;
+                }
+            }
+            
+            // 如果沒有找到特定的真人語音，找一個標準的台灣中文語音
+            if (!preferredVoice) {
+                preferredVoice = voices.find(v => v.lang === 'zh-TW' || v.lang === 'zh-tw');
+            }
+        }
+
+        // 監聽語音庫載入完成事件 (特別是 Chrome 需要)
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices();
+        }
+
         function speakWord(text) {
             try {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'zh-TW';
-                    utterance.rate = 1.0; 
+                    utterance.rate = 0.95; // 稍微放慢一點點，聽起來更像真人在說話
+                    
+                    // 如果有找到較好的真人語音，則套用它
+                    if (preferredVoice) {
+                        utterance.voice = preferredVoice;
+                    }
+                    
                     window.speechSynthesis.speak(utterance);
                 }
             } catch(e) {
