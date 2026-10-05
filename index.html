@@ -35,11 +35,8 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
             transition: opacity 0.3s ease;
             z-index: 10;
         }
@@ -80,15 +77,19 @@
 
         .hud-text {
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 900;
             text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+
+        @media (min-width: 768px) {
+            .hud-text { font-size: 1.8rem; }
         }
 
         .lesson-btn {
             background: linear-gradient(135deg, #4fd1c5 0%, #319795 100%);
             color: white;
-            padding: 10px 15px;
+            padding: 12px 10px;
             font-size: 1.1rem;
             font-weight: 700;
             border-radius: 12px;
@@ -96,6 +97,7 @@
             border: 2px solid #e6fffa;
             transition: transform 0.1s, box-shadow 0.1s;
             cursor: pointer;
+            width: 100%;
         }
         
         .lesson-btn:active {
@@ -105,12 +107,12 @@
 
         .lang-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 5px 15px;
+            padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
             z-index: 100;
@@ -124,131 +126,145 @@
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid #4fd1c5;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border-radius: 9999px;
             font-size: 1.2rem;
             text-align: center;
             outline: none;
-            width: 80%;
-            max-width: 300px;
-            margin-bottom: 10px;
+            width: 100%;
             transition: border-color 0.2s;
         }
         .name-input:focus { border-color: #f6e05e; }
+
+        /* 自訂滾動條 */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #4fd1c5; border-radius: 10px; }
     </style>
 </head>
 <body>
-    <button class="lang-btn" onclick="toggleLanguage()">🌐 EN / 中文</button>
+    <button class="lang-btn shadow-lg" onclick="toggleLanguage()">🌐 EN / 中文</button>
 
     <div id="hud">
         <div class="hud-text"><span data-i18n="score">分數: </span><span id="scoreDisplay">0</span></div>
-        <div class="hud-text" id="collectionHudText">
-            <span id="collectionModeText" class="hidden text-yellow-300"></span>
+        <div class="hud-text text-center" id="collectionHudText">
+            <span id="collectionModeText" class="hidden text-yellow-300 block text-sm"></span>
             <span id="collectionCounterWrapper"><span data-i18n="collect">收集: </span><span id="collectedCount">0</span>/<span id="totalCount">0</span></span>
         </div>
-        <!-- 恢復生命值為愛心顯示 -->
         <div class="hud-text" id="livesDisplay">❤️❤️❤️</div>
     </div>
 
-    <!-- 聽力挑戰 UI -->
-    <div id="targetUI" class="absolute top-20 left-1/2 transform -translate-x-1/2 z-10 flex flex-col items-center hidden">
-        <div data-i18n="target_instruction" class="text-yellow-300 text-lg md:text-xl font-black mb-1 shadow-black drop-shadow-md" style="text-shadow: 1px 1px 2px #000;">聽語音，切出正確的字！</div>
-        <button onclick="replayTargetAudio()" class="bg-blue-600 hover:bg-blue-500 border-4 border-blue-300 text-white rounded-full px-6 py-2 text-2xl md:text-4xl font-black shadow-[0_0_15px_rgba(59,130,246,0.5)] transition transform active:scale-95 flex items-center gap-3">
-            🔊 <span id="targetWordText" class="tracking-widest filter blur-md transition-all duration-300">???</span>
-        </button>
-        <button onclick="toggleWordVisibility()" data-i18n="toggle_hint" class="mt-2 bg-gray-800 bg-opacity-70 text-sm text-gray-200 px-3 py-1 rounded-full border border-gray-500 hover:bg-gray-700">👁️ 顯示/隱藏提示</button>
+    <!-- 聽力挑戰 UI (全新設計：直接顯示注音拼音) -->
+    <div id="targetUI" class="absolute top-16 left-1/2 transform -translate-x-1/2 z-10 hidden w-[90%] max-w-sm">
+        <div class="bg-gray-900 bg-opacity-85 border-2 border-yellow-400 rounded-3xl p-4 w-full shadow-[0_10px_25px_rgba(0,0,0,0.8)] flex flex-col items-center backdrop-blur-md">
+            <div data-i18n="target_instruction" class="text-yellow-300 text-sm font-bold mb-2 tracking-wide">點擊按鈕聽語音，切出正確的字！</div>
+            
+            <button onclick="replayTargetAudio()" class="bg-blue-600 hover:bg-blue-500 border-4 border-blue-300 text-white rounded-full w-16 h-16 shadow-[0_0_20px_rgba(59,130,246,0.6)] transition transform active:scale-95 flex items-center justify-center mb-3">
+                <span class="text-3xl">🔊</span>
+            </button>
+            
+            <div class="w-full text-center space-y-1 bg-black bg-opacity-50 rounded-xl p-3 border border-gray-700">
+                <div id="targetZhuyin" class="text-green-400 text-xl md:text-2xl font-black tracking-widest leading-none"></div>
+                <div id="targetPinyin" class="text-gray-300 text-lg md:text-xl font-mono leading-none mt-1"></div>
+                <div id="targetEnglish" class="text-blue-300 text-base md:text-lg font-bold leading-none mt-2"></div>
+            </div>
+        </div>
     </div>
 
     <!-- 遊戲控制按鈕 (暫停) -->
-    <div id="gameControls" class="absolute top-6 right-6 z-50 hidden">
+    <div id="gameControls" class="absolute top-4 right-4 z-50 hidden">
         <button onclick="togglePause()" class="w-12 h-12 bg-blue-600 hover:bg-blue-500 text-white rounded-full border-2 border-blue-300 shadow-lg flex items-center justify-center text-2xl transition transform active:scale-95 opacity-80 hover:opacity-100">
             ⏸️
         </button>
     </div>
 
-    <!-- 查看本課生詞圖鑑的按鈕 -->
+    <!-- 查閱本課圖鑑按鈕 -->
     <button id="vocabBtn" onclick="toggleVocabModal()" data-i18n="lesson_vocab_btn" class="absolute bottom-6 right-6 md:bottom-8 md:right-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-full shadow-lg z-50 text-sm md:text-base border-2 border-indigo-300 hidden transition transform active:scale-95">
         📖 本課生詞圖鑑
     </button>
 
     <!-- 生詞圖鑑彈出視窗 -->
-    <div id="vocabModal" class="overlay hidden" style="background-color: rgba(0,0,0,0.85); z-index: 100;">
+    <div id="vocabModal" class="overlay hidden flex-col items-center justify-center" style="z-index: 100;">
         <div class="bg-gray-800 border-4 border-yellow-500 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl max-h-[80vh] flex flex-col">
             <h2 class="text-2xl font-black text-yellow-400 mb-2 text-center">
                 <span id="modalLessonPrefix" data-i18n="lesson_prefix">第 </span><span id="modalLessonNum">1</span><span id="modalLessonSuffix" data-i18n="lesson_suffix_modal"> 課生詞收集冊</span>
             </h2>
             <p data-i18n="mode_desc4" class="text-gray-300 text-sm mb-4 text-center">切開飛上來的生詞來點亮它們！收集完全部即可過關！</p>
-            <div id="vocabGrid" class="grid grid-cols-3 gap-2 overflow-y-auto p-2 flex-grow bg-gray-900 rounded-xl border border-gray-700">
-                <!-- 動態填入生詞狀態 -->
+            <div id="vocabGrid" class="grid grid-cols-2 md:grid-cols-3 gap-2 overflow-y-auto p-2 flex-grow bg-gray-900 rounded-xl border border-gray-700">
             </div>
             <button class="btn mt-4 py-2 text-lg" data-i18n="continue_game" onclick="toggleVocabModal()">繼續遊戲</button>
         </div>
     </div>
 
     <!-- 全局圖鑑彈出視窗 -->
-    <div id="globalVocabModal" class="overlay hidden" style="background-color: rgba(0,0,0,0.9); z-index: 100;">
-        <div class="bg-gray-800 border-4 border-purple-500 rounded-2xl p-4 md:p-6 max-w-3xl w-full mx-4 shadow-2xl h-[85vh] flex flex-col">
+    <div id="globalVocabModal" class="overlay hidden flex-col items-center justify-center" style="z-index: 100;">
+        <div class="bg-gray-800 border-4 border-purple-500 rounded-2xl p-4 md:p-6 max-w-4xl w-full mx-4 shadow-2xl h-[85vh] flex flex-col">
             <h2 data-i18n="global_col_title" class="text-3xl font-black text-purple-400 mb-4 text-center">我的生詞圖鑑</h2>
             <div id="globalVocabContainer" class="overflow-y-auto flex-grow bg-gray-900 rounded-xl border border-gray-700 p-4 space-y-6">
-                <!-- 動態填入全課生詞狀態 -->
             </div>
-            <button class="btn mt-4 py-2 text-lg bg-gray-500" data-i18n="close_btn" onclick="toggleGlobalVocabModal()">關閉</button>
+            <button class="btn mt-4 py-2 text-lg bg-gray-500 border-gray-400 text-white" data-i18n="close_btn" onclick="toggleGlobalVocabModal()">關閉</button>
         </div>
     </div>
 
-    <div id="startScreen" class="overlay">
-        <h1 data-i18n="title" class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-red-500 mb-2 text-center" style="filter: drop-shadow(2px 4px 6px black);">
-            詞彙忍者
-        </h1>
-        <h2 data-i18n="subtitle" class="text-xl md:text-2xl text-white mb-4 font-bold text-center px-4">
-            《學華語向前走》第二冊
-        </h2>
-        
-        <!-- 姓名輸入、動物速度設定與全域圖鑑 -->
-        <div class="flex flex-col items-center w-full mb-4 px-4">
-            <input type="text" id="playerName" class="name-input" placeholder="輸入姓名 / Enter Name" onchange="savePlayerName(this.value)">
+    <!-- 全新卡片式主畫面 -->
+    <div id="startScreen" class="overlay overflow-y-auto py-10 px-4 flex items-center justify-center">
+        <div class="flex flex-col lg:flex-row gap-6 w-full max-w-5xl items-stretch mt-10 md:mt-0">
             
-            <div class="flex items-center justify-center gap-2 mt-2 w-full max-w-[300px]">
-                <span data-i18n="speed_label" class="text-white font-bold text-sm md:text-base whitespace-nowrap drop-shadow-md">遊戲速度:</span>
-                <select id="gameSpeedSelect" class="bg-gray-800 text-yellow-300 border-2 border-gray-500 rounded-full px-3 py-1 font-bold outline-none flex-grow text-center" onchange="setGameSpeed(this.value)">
-                    <option value="0.75" data-i18n="speed_slow">🐢 慢速</option>
-                    <option value="1.0" data-i18n="speed_normal" selected>🐇 正常</option>
-                    <option value="1.15" data-i18n="speed_fast">🐎 快速</option>
-                </select>
+            <!-- 左側卡片：設定與說明 -->
+            <div class="bg-gray-800 bg-opacity-90 border-4 border-blue-400 rounded-3xl p-6 md:p-8 flex-1 flex flex-col shadow-2xl relative">
+                <div class="text-center mb-6">
+                    <h1 data-i18n="title" class="text-5xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-red-500" style="filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.8));">詞彙忍者</h1>
+                    <h2 data-i18n="subtitle" class="text-lg md:text-xl text-blue-200 mt-2 font-bold">《學華語向前走》第二冊</h2>
+                </div>
+                
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-1 pl-2">忍者代號 (姓名)</label>
+                        <input type="text" id="playerName" class="name-input" placeholder="輸入姓名 / Enter Name" onchange="savePlayerName(this.value)">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-400 text-sm font-bold mb-1 pl-2" data-i18n="speed_label">遊戲速度</label>
+                        <select id="gameSpeedSelect" class="w-full bg-gray-700 text-yellow-300 border-2 border-gray-500 rounded-full px-4 py-3 font-bold outline-none text-center" onchange="setGameSpeed(this.value)">
+                            <option value="0.75" data-i18n="speed_slow">🐢 慢速練習</option>
+                            <option value="1.0" data-i18n="speed_normal" selected>🐇 正常挑戰</option>
+                            <option value="1.15" data-i18n="speed_fast">🐎 忍者大師</option>
+                        </select>
+                    </div>
+
+                    <button class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-4 rounded-full border-2 border-purple-300 shadow-lg transition transform active:scale-95" onclick="toggleGlobalVocabModal()">
+                        <span data-i18n="collection_btn">📚 我的全域圖鑑</span>
+                    </button>
+                </div>
+
+                <div class="mt-auto bg-gray-900 bg-opacity-50 p-4 rounded-2xl border border-gray-600">
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        <span data-i18n="mode_desc1" class="text-green-400 font-bold text-base block mb-1">🎧 聽力挑戰模式！</span>
+                        <span data-i18n="mode_desc2">注意聽語音，<span class="text-yellow-300 font-bold">切開與語音相符的生詞！</span></span><br>
+                        <span data-i18n="mode_desc3">切錯生詞或切到炸彈(💣)會扣命！沒命時請切水果補血。</span><br>
+                        <span data-i18n="mode_desc4">收集完全部生詞即可過關！圖鑑內可聽造句。</span>
+                    </p>
+                </div>
+                
+                <div class="absolute -bottom-8 left-0 right-0 text-gray-500 text-xs font-medium text-center pointer-events-none">
+                    Powered by Gemini | Sophia老師的AI練習本
+                </div>
             </div>
 
-            <button class="lesson-btn mt-3 bg-purple-600 hover:bg-purple-500 border-purple-300 w-full max-w-[300px]" onclick="toggleGlobalVocabModal()">
-                <span data-i18n="collection_btn">📚 我的圖鑑</span>
-            </button>
-        </div>
+            <!-- 右側卡片：關卡選擇 -->
+            <div class="bg-gray-800 bg-opacity-90 border-4 border-green-500 rounded-3xl p-6 md:p-8 flex-[1.2] flex flex-col shadow-2xl">
+                <h3 class="text-2xl font-black text-green-400 mb-4 text-center pb-2 border-b border-gray-600" data-i18n="select_lesson_title">選擇關卡</h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 w-full" id="lessonButtonsContainer">
+                    <!-- 動態生成 -->
+                </div>
+            </div>
 
-        <p class="text-gray-300 mb-4 max-w-md text-center px-4 leading-relaxed text-sm md:text-base">
-            <span data-i18n="mode_desc1" class="text-blue-300 font-bold text-lg">🎧 聽力挑戰模式！</span><br>
-            <span data-i18n="mode_desc2">注意聽語音，<span class="text-yellow-300 font-bold">切開與語音相符的生詞！</span></span><br>
-            <span data-i18n="mode_desc3">切錯生詞或切到炸彈(💣)會扣命！</span><br>
-            <span data-i18n="mode_desc4">收集完全部生詞即可過關！</span>
-        </p>
-
-        <!-- 只有單課跟自訂複習按鈕 -->
-        <div class="grid grid-cols-3 md:grid-cols-4 gap-2.5 w-full max-w-2xl px-4 mt-2" id="lessonButtonsContainer">
-            <!-- 動態生成 -->
-        </div>
-        
-        <div class="absolute bottom-3 md:bottom-5 text-gray-400 text-xs md:text-sm font-medium tracking-wide text-center w-full pointer-events-none drop-shadow-md">
-            Powered by Gemini | Sophia老師的AI練習本
         </div>
     </div>
 
-    <!-- 遊戲結束畫面 (保留備用) -->
-    <div id="gameOverScreen" class="overlay hidden">
-        <h1 data-i18n="game_over" class="text-6xl font-black text-red-500 mb-2" style="text-shadow: 3px 3px 0 #000;">遊戲結束</h1>
-        <p class="text-3xl text-white font-bold mb-8"><span data-i18n="final_score">最終分數: </span><span id="finalScore" class="text-yellow-400">0</span></p>
-        <button data-i18n="play_again" class="btn mb-4" onclick="resetGame()">再玩一次</button>
-        <button data-i18n="back_menu" class="btn bg-gray-500 border-gray-400 text-white" style="background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);" onclick="backToMenu()">回主選單</button>
-    </div>
-
-    <!-- 過關畫面包含雙圖鑑按鈕與正確 ID -->
-    <div id="winScreen" class="overlay hidden">
+    <!-- 過關畫面 -->
+    <div id="winScreen" class="overlay hidden flex-col items-center justify-center">
         <h1 data-i18n="win_title" class="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-yellow-300 mb-2 text-center" style="filter: drop-shadow(2px 4px 6px black);">太棒了！過關！</h1>
         <p class="text-2xl md:text-3xl text-white font-bold mb-6 text-center"><span data-i18n="win_desc1">你完成了第 </span><span id="winLessonText" class="text-green-400">X</span><span data-i18n="win_desc2"> 課的圖鑑收集！</span></p>
         
@@ -264,24 +280,24 @@
     </div>
 
     <!-- 暫停畫面 -->
-    <div id="pauseScreen" class="overlay hidden" style="background-color: rgba(0,0,0,0.85); z-index: 100;">
+    <div id="pauseScreen" class="overlay hidden flex-col items-center justify-center" style="z-index: 100;">
         <h1 data-i18n="paused" class="text-5xl md:text-6xl font-black text-blue-400 mb-8" style="text-shadow: 3px 3px 0 #000;">遊戲暫停</h1>
         <button data-i18n="resume" class="btn mb-4 bg-green-500 border-green-300 text-white" onclick="togglePause()">繼續遊戲</button>
         <button data-i18n="home" class="btn bg-gray-500 border-gray-400 text-white" style="background: linear-gradient(135deg, #a0aec0 0%, #718096 100%);" onclick="quitGame()">回主選單</button>
     </div>
 
     <!-- 自訂複習選單 -->
-    <div id="customReviewModal" class="overlay hidden" style="background-color: rgba(0,0,0,0.9); z-index: 100;">
-        <div class="bg-gray-800 border-4 border-blue-500 rounded-2xl p-4 md:p-6 max-w-lg w-full mx-4 shadow-2xl flex flex-col">
+    <div id="customReviewModal" class="overlay hidden flex-col items-center justify-center" style="z-index: 100;">
+        <div class="bg-gray-800 border-4 border-blue-500 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl flex flex-col">
             <h2 data-i18n="custom_title" class="text-2xl md:text-3xl font-black text-blue-400 mb-4 text-center">選擇要複習的課別</h2>
             <div id="customCheckboxGrid" class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-3 mb-4">
-                <!-- 動態生成勾選框 -->
+                <!-- 動態生成 -->
             </div>
             <div id="customWarning" class="text-red-400 text-center mb-2 hidden font-bold" data-i18n="alert_no_selection">請至少選擇一課！</div>
             <div class="flex justify-between gap-2 mb-4">
-                <button class="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg font-bold" data-i18n="select_all" onclick="selectAllCustom()">全選</button>
-                <button class="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg font-bold" data-i18n="clear_all" onclick="clearAllCustom()">全不選</button>
-                <button class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-bold flex items-center justify-center gap-1" onclick="generateCustomLink()">
+                <button class="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg font-bold text-sm md:text-base" data-i18n="select_all" onclick="selectAllCustom()">全選</button>
+                <button class="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-2 rounded-lg font-bold text-sm md:text-base" data-i18n="clear_all" onclick="clearAllCustom()">全不選</button>
+                <button class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-2 rounded-lg font-bold text-sm md:text-base flex items-center justify-center gap-1" onclick="generateCustomLink()">
                     <span data-i18n="generate_link">🔗 複製連結</span>
                 </button>
             </div>
@@ -308,19 +324,276 @@
         let playerName = localStorage.getItem('ninja_player_name') || '';
         let selectedGameSpeed = parseFloat(localStorage.getItem('ninja_speed')) || 1.0;
 
+        // --- 完整生詞圖鑑資料庫 (注音, 拼音, 英文) ---
+        const wordDictionary = {
+            "新": { zhuyin: "ㄒㄧㄣ", pinyin: "xīn", en: "new" },
+            "現在": { zhuyin: "ㄒㄧㄢˋ ㄗㄞˋ", pinyin: "xiàn zài", en: "now" },
+            "介紹": { zhuyin: "ㄐㄧㄝˋ ㄕㄠˋ", pinyin: "jiè shào", en: "to introduce" },
+            "自己": { zhuyin: "ㄗˋ ㄐㄧˇ", pinyin: "zì jǐ", en: "oneself" },
+            "大家": { zhuyin: "ㄉㄚˋ ㄐㄧㄚ", pinyin: "dà jiā", en: "everyone" },
+            "今年": { zhuyin: "ㄐㄧㄣ ㄋㄧㄢˊ", pinyin: "jīn nián", en: "this year" },
+            "跟": { zhuyin: "ㄍㄣ", pinyin: "gēn", en: "with" },
+            "游泳": { zhuyin: "ㄧㄡˊ ㄩㄥˇ", pinyin: "yóu yǒng", en: "to swim" },
+            "比較": { zhuyin: "ㄅㄧˇ ㄐㄧㄠˋ", pinyin: "bǐ jiào", en: "comparatively" },
+            "看書": { zhuyin: "ㄎㄢˋ ㄕㄨ", pinyin: "kàn shū", en: "to read" },
+            "高興": { zhuyin: "ㄍㄠ ㄒㄧㄥˋ", pinyin: "gāo xìng", en: "happy" },
+            "認識": { zhuyin: "ㄖㄣˋ ㄕˋ", pinyin: "rèn shi", en: "to know" },
+            "歡迎": { zhuyin: "ㄏㄨㄢ ㄧㄥˊ", pinyin: "huān yíng", en: "welcome" },
+            "華語": { zhuyin: "ㄏㄨㄚˊ ㄩˇ", pinyin: "huá yǔ", en: "Mandarin" },
+            "學": { zhuyin: "ㄒㄩㄝˊ", pinyin: "xué", en: "to learn" },
+            "最": { zhuyin: "ㄗㄨㄟˋ", pinyin: "zuì", en: "the most" },
+            "方友朋": { zhuyin: "ㄈㄤ ㄧㄡˇ ㄆㄥˊ", pinyin: "fāng yǒu péng", en: "Fang Youpeng (Name)" },
+            "張莉": { zhuyin: "ㄓㄤ ㄌㄧˋ", pinyin: "zhāng lì", en: "Zhang Li (Name)" },
+            "外公": { zhuyin: "ㄨㄞˋ ㄍㄨㄥ", pinyin: "wài gōng", en: "maternal grandfather" },
+            "以前": { zhuyin: "ㄧˇ ㄑㄧㄢˊ", pinyin: "yǐ qián", en: "before" },
+            "外婆": { zhuyin: "ㄨㄞˋ ㄆㄛˊ", pinyin: "wài pó", en: "maternal grandmother" },
+            "做生意": { zhuyin: "ㄗㄨㄛˋ ㄕㄥ ㄧˋ", pinyin: "zuò shēng yì", en: "to do business" },
+            "幫": { zhuyin: "ㄅㄤ", pinyin: "bāng", en: "to help" },
+            "醫生": { zhuyin: "ㄧ ㄕㄥ", pinyin: "yī shēng", en: "doctor" },
+            "工作": { zhuyin: "ㄍㄨㄥ ㄗㄨㄛˋ", pinyin: "gōng zuò", en: "to work, job" },
+            "銀行": { zhuyin: "ㄧㄣˊ ㄏㄤˊ", pinyin: "yín háng", en: "bank" },
+            "一樣": { zhuyin: "ㄧˊ ㄧㄤˋ", pinyin: "yí yàng", en: "same" },
+            "電腦公司": { zhuyin: "ㄉㄧㄢˋ ㄋㄠˇ ㄍㄨㄥ ㄙ", pinyin: "diàn nǎo gōng sī", en: "computer company" },
+            "上班": { zhuyin: "ㄕㄤˋ ㄅㄢ", pinyin: "shàng bān", en: "to go to work" },
+            "以後": { zhuyin: "ㄧˇ ㄏㄡˋ", pinyin: "yǐ hòu", en: "in the future" },
+            "要": { zhuyin: "ㄧㄠˋ", pinyin: "yào", en: "to want" },
+            "附近": { zhuyin: "ㄈㄨˋ ㄐㄧㄣˋ", pinyin: "fù jìn", en: "nearby" },
+            "超級市場": { zhuyin: "ㄔㄠ ㄐㄧˊ ㄕˋ ㄔㄤˇ", pinyin: "chāo jí shì chǎng", en: "supermarket" },
+            "東西": { zhuyin: "ㄉㄨㄥ ㄒㄧ", pinyin: "dōng xi", en: "thing(s)" },
+            "巧克力": { zhuyin: "ㄑㄧㄠˇ ㄎㄜˋ ㄌㄧˋ", pinyin: "qiǎo kè lì", en: "chocolate" },
+            "冰淇淋": { zhuyin: "ㄅㄧㄥ ㄑㄧˊ ㄌㄧㄣˊ", pinyin: "bīng qí lín", en: "ice cream" },
+            "買": { zhuyin: "ㄇㄞˇ", pinyin: "mǎi", en: "to buy" },
+            "牛肉": { zhuyin: "ㄋㄧㄡˊ ㄖㄡˋ", pinyin: "niú ròu", en: "beef" },
+            "青菜": { zhuyin: "ㄑㄧㄥ ㄘㄞˋ", pinyin: "qīng cài", en: "green vegetables" },
+            "米": { zhuyin: "ㄇㄧˇ", pinyin: "mǐ", en: "uncooked rice" },
+            "可以": { zhuyin: "ㄎㄜˇ ㄧˇ", pinyin: "kě yǐ", en: "can, may" },
+            "糖果": { zhuyin: "ㄊㄤˊ ㄍㄨㄛˇ", pinyin: "táng guǒ", en: "candy" },
+            "魚": { zhuyin: "ㄩˊ", pinyin: "yú", en: "fish" },
+            "週末": { zhuyin: "ㄓㄡ ㄇㄛˋ", pinyin: "zhōu mò", en: "weekend" },
+            "漢堡": { zhuyin: "ㄏㄢˋ ㄅㄠˇ", pinyin: "hàn bǎo", en: "hamburger" },
+            "薯條": { zhuyin: "ㄕㄨˇ ㄊㄧㄠˊ", pinyin: "shǔ tiáo", en: "french fries" },
+            "出去": { zhuyin: "ㄔㄨ ㄑㄩˋ", pinyin: "chū qù", en: "to go out" },
+            "先": { zhuyin: "ㄒㄧㄢ", pinyin: "xiān", en: "first" },
+            "蛋炒飯": { zhuyin: "ㄉㄢˋ ㄔㄠˇ ㄈㄢˋ", pinyin: "dàn chǎo fàn", en: "egg fried rice" },
+            "晚餐": { zhuyin: "ㄨㄢˇ ㄘㄢ", pinyin: "wǎn cān", en: "dinner" },
+            "再": { zhuyin: "ㄗㄞˋ", pinyin: "zài", en: "then, again" },
+            "麵": { zhuyin: "ㄇㄧㄢˋ", pinyin: "miàn", en: "noodles" },
+            "了": { zhuyin: "ㄌㄜ˙", pinyin: "le", en: "(completed action)" },
+            "湯": { zhuyin: "ㄊㄤ", pinyin: "tāng", en: "soup" },
+            "玉米": { zhuyin: "ㄩˋ ㄇㄧˇ", pinyin: "yù mǐ", en: "corn" },
+            "已經": { zhuyin: "ㄧˇ ㄐㄧㄥ", pinyin: "yǐ jīng", en: "already" },
+            "餓": { zhuyin: "ㄜˋ", pinyin: "è", en: "hungry" },
+            "快點": { zhuyin: "ㄎㄨㄞˋ ㄉㄧㄢˇ", pinyin: "kuài diǎn", en: "faster, hurry" },
+            "秋天": { zhuyin: "ㄑㄧㄡ ㄊㄧㄢ", pinyin: "qiū tiān", en: "autumn" },
+            "樹葉": { zhuyin: "ㄕㄨˋ ㄧㄝˋ", pinyin: "shù yè", en: "leaf" },
+            "變": { zhuyin: "ㄅㄧㄢˋ", pinyin: "biàn", en: "to change" },
+            "黃": { zhuyin: "ㄏㄨㄤˊ", pinyin: "huáng", en: "yellow" },
+            "草": { zhuyin: "ㄘㄠˇ", pinyin: "cǎo", en: "grass" },
+            "還是": { zhuyin: "ㄏㄞˊ ㄕˋ", pinyin: "hái shì", en: "still, or" },
+            "綠色": { zhuyin: "ㄌㄩˋ ㄙㄜˋ", pinyin: "lǜ sè", en: "green" },
+            "天氣": { zhuyin: "ㄊㄧㄢ ㄑㄧˋ", pinyin: "tiān qì", en: "weather" },
+            "舒服": { zhuyin: "ㄕㄨ ㄈㄨˊ", pinyin: "shū fú", en: "comfortable" },
+            "春天": { zhuyin: "ㄔㄨㄣ ㄊㄧㄢ", pinyin: "chūn tiān", en: "spring" },
+            "不錯": { zhuyin: "ㄅㄨˊ ㄘㄨㄛˋ", pinyin: "bú cuò", en: "not bad" },
+            "顏色": { zhuyin: "ㄧㄢˊ ㄙㄜˋ", pinyin: "yán sè", en: "color" },
+            "時候": { zhuyin: "ㄕˊ ㄏㄡˋ", pinyin: "shí hòu", en: "time, when" },
+            "花": { zhuyin: "ㄏㄨㄚ", pinyin: "huā", en: "flower(s)" },
+            "院子": { zhuyin: "ㄩㄢˋ ㄗ˙", pinyin: "yuàn zi", en: "yard" },
+            "紅色": { zhuyin: "ㄏㄨㄥˊ ㄙㄜˋ", pinyin: "hóng sè", en: "red" },
+            "白色": { zhuyin: "ㄅㄞˊ ㄙㄜˋ", pinyin: "bái sè", en: "white" },
+            "漂亮": { zhuyin: "ㄆㄧㄠˋ ㄌㄧㄤˋ", pinyin: "piào liàng", en: "beautiful" },
+            "農曆": { zhuyin: "ㄋㄨㄥˊ ㄌㄧˋ", pinyin: "nóng lì", en: "lunar calendar" },
+            "說": { zhuyin: "ㄕㄨㄛ", pinyin: "shuō", en: "to speak" },
+            "新年": { zhuyin: "ㄒㄧㄣ ㄋㄧㄢˊ", pinyin: "xīn nián", en: "New Year" },
+            "華人": { zhuyin: "ㄏㄨㄚˊ ㄖㄣˊ", pinyin: "huá rén", en: "Ethnic Chinese" },
+            "下": { zhuyin: "ㄒㄧㄚˋ", pinyin: "xià", en: "next, down" },
+            "星期": { zhuyin: "ㄒㄧㄥ ㄑㄧˊ", pinyin: "xīng qí", en: "week" },
+            "會": { zhuyin: "ㄏㄨㄟˋ", pinyin: "huì", en: "will, shall" },
+            "年糕": { zhuyin: "ㄋㄧㄢˊ ㄍㄠ", pinyin: "nián gāo", en: "sticky cakes" },
+            "那天": { zhuyin: "ㄋㄚˋ ㄊㄧㄢ", pinyin: "nà tiān", en: "that day" },
+            "給": { zhuyin: "ㄍㄟˇ", pinyin: "gěi", en: "to give" },
+            "拜年": { zhuyin: "ㄅㄞˋ ㄋㄧㄢˊ", pinyin: "bài nián", en: "New Year visit" },
+            "台灣": { zhuyin: "ㄊㄞˊ ㄨㄢ", pinyin: "tái wān", en: "Taiwan" },
+            "每": { zhuyin: "ㄇㄟˇ", pinyin: "měi", en: "every, each" },
+            "紅包": { zhuyin: "ㄏㄨㄥˊ ㄅㄠ", pinyin: "hóng bāo", en: "red envelope" },
+            "如果": { zhuyin: "ㄖㄨˊ ㄍㄨㄛˇ", pinyin: "rú guǒ", en: "if" },
+            "放鞭炮": { zhuyin: "ㄈㄤˋ ㄅㄧㄢ ㄆㄠˋ", pinyin: "fàng biān pào", en: "set off firecrackers" },
+            "貼春聯": { zhuyin: "ㄊㄧㄝ ㄔㄨㄣ ㄌㄧㄢˊ", pinyin: "tiē chūn lián", en: "paste spring couplets" },
+            "該": { zhuyin: "ㄍㄞ", pinyin: "gāi", en: "should" },
+            "起床": { zhuyin: "ㄑㄧˇ ㄔㄨㄤˊ", pinyin: "qǐ chuáng", en: "get out of bed" },
+            "來不及": { zhuyin: "ㄌㄞˊ ㄅㄨˋ ㄐㄧˊ", pinyin: "lái bù jí", en: "too late" },
+            "累": { zhuyin: "ㄌㄟˋ", pinyin: "lèi", en: "tired" },
+            "睡覺": { zhuyin: "ㄕㄨㄟˋ ㄐㄧㄠˋ", pinyin: "shuì jiào", en: "sleep" },
+            "趕快": { zhuyin: "ㄍㄢˇ ㄎㄨㄞˋ", pinyin: "gǎn kuài", en: "hurry up" },
+            "刷牙": { zhuyin: "ㄕㄨㄚ ㄧㄚˊ", pinyin: "shuā yá", en: "brush teeth" },
+            "洗澡": { zhuyin: "ㄒㄧˇ ㄗㄠˇ", pinyin: "xǐ zǎo", en: "take a bath" },
+            "用": { zhuyin: "ㄩㄥˋ", pinyin: "yòng", en: "to use" },
+            "過": { zhuyin: "ㄍㄨㄛˋ", pinyin: "guò", en: "(completion/past)" },
+            "別": { zhuyin: "ㄅㄧㄝˊ", pinyin: "bié", en: "don't" },
+            "昨天": { zhuyin: "ㄗㄨㄛˊ ㄊㄧㄢ", pinyin: "zuó tiān", en: "yesterday" },
+            "忘": { zhuyin: "ㄨㄤˋ", pinyin: "wàng", en: "forget" },
+            "肥皂": { zhuyin: "ㄈㄟˊ ㄗㄠˋ", pinyin: "féi zào", en: "soap" },
+            "知道": { zhuyin: "ㄓ ㄉㄠˋ", pinyin: "zhī dào", en: "know" },
+            "洗": { zhuyin: "ㄒㄧˇ", pinyin: "xǐ", en: "wash" },
+            "乾淨": { zhuyin: "ㄍㄢ ㄐㄧㄥˋ", pinyin: "gān jìng", en: "clean" },
+            "洗臉": { zhuyin: "ㄒㄧˇ ㄌㄧㄢˇ", pinyin: "xǐ liǎn", en: "wash face" },
+            "晚上": { zhuyin: "ㄨㄢˇ ㄕㄤˋ", pinyin: "wǎn shàng", en: "night" },
+            "送給": { zhuyin: "ㄙㄨㄥˋ ㄍㄟˇ", pinyin: "sòng gěi", en: "give as present" },
+            "隻": { zhuyin: "ㄓ", pinyin: "zhī", en: "(animal measure word)" },
+            "狗": { zhuyin: "ㄍㄡˇ", pinyin: "gǒu", en: "dog" },
+            "寵物": { zhuyin: "ㄔㄨㄥˇ ㄨˋ", pinyin: "chǒng wù", en: "pet" },
+            "帶": { zhuyin: "ㄉㄞˋ", pinyin: "dài", en: "bring" },
+            "牠們": { zhuyin: "ㄊㄚ ㄇㄣ˙", pinyin: "tā men", en: "they/them (animals)" },
+            "散步": { zhuyin: "ㄙㄢˋ ㄅㄨˋ", pinyin: "sàn bù", en: "take a walk" },
+            "去年": { zhuyin: "ㄑㄩˋ ㄋㄧㄢˊ", pinyin: "qù nián", en: "last year" },
+            "貓": { zhuyin: "ㄇㄠ", pinyin: "māo", en: "cat" },
+            "上個月": { zhuyin: "ㄕㄤˋ ㄍㄜ˙ ㄩㄝˋ", pinyin: "shàng ge yuè", en: "last month" },
+            "養": { zhuyin: "ㄧㄤˇ", pinyin: "yǎng", en: "raise" },
+            "不見了": { zhuyin: "ㄅㄨˊ ㄐㄧㄢˋ ㄌㄜ˙", pinyin: "bú jiàn le", en: "disappeared" },
+            "非常": { zhuyin: "ㄈㄟ ㄔㄤˊ", pinyin: "fēi cháng", en: "very, extremely" },
+            "可愛": { zhuyin: "ㄎㄜˇ ㄞˋ", pinyin: "kě ài", en: "cute" },
+            "兔子": { zhuyin: "ㄊㄨˋ ㄗ˙", pinyin: "tù zi", en: "rabbit" },
+            "餵": { zhuyin: "ㄨㄟˋ", pinyin: "wèi", en: "feed" },
+            "指南針": { zhuyin: "ㄓˇ ㄋㄢˊ ㄓㄣ", pinyin: "zhǐ nán zhēn", en: "compass" },
+            "指北針": { zhuyin: "ㄓˇ ㄅㄟˇ ㄓㄣ", pinyin: "zhǐ běi zhēn", en: "compass" },
+            "它": { zhuyin: "ㄊㄚ", pinyin: "tā", en: "it (objects)" },
+            "南方": { zhuyin: "ㄋㄢˊ ㄈㄤ", pinyin: "nán fāng", en: "south" },
+            "北方": { zhuyin: "ㄅㄟˇ ㄈㄤ", pinyin: "běi fāng", en: "north" },
+            "教室": { zhuyin: "ㄐㄧㄠˋ ㄕˋ", pinyin: "jiào shì", en: "classroom" },
+            "告訴": { zhuyin: "ㄍㄠˋ ㄙㄨˋ", pinyin: "gào sù", en: "tell" },
+            "方向": { zhuyin: "ㄈㄤ ㄒㄧㄤˋ", pinyin: "fāng xiàng", en: "direction" },
+            "校門口": { zhuyin: "ㄒㄧㄠˋ ㄇㄣˊ ㄎㄡˇ", pinyin: "xiào mén kǒu", en: "school entrance" },
+            "足球場": { zhuyin: "ㄗㄨˊ ㄑㄧㄡˊ ㄔㄤˇ", pinyin: "zú qiú chǎng", en: "soccer field" },
+            "東方": { zhuyin: "ㄉㄨㄥ ㄈㄤ", pinyin: "dōng fāng", en: "east" },
+            "西方": { zhuyin: "ㄒㄧ ㄈㄤ", pinyin: "xī fāng", en: "west" },
+            "因為": { zhuyin: "ㄧㄣ ㄨㄟˋ", pinyin: "yīn wèi", en: "because" },
+            "所以": { zhuyin: "ㄙㄨㄛˇ ㄧˇ", pinyin: "suǒ yǐ", en: "so, therefore" },
+            "暑假": { zhuyin: "ㄕㄨˇ ㄐㄧㄚˋ", pinyin: "shǔ jià", en: "summer vacation" },
+            "看": { zhuyin: "ㄎㄢˋ", pinyin: "kàn", en: "visit, look" },
+            "本來": { zhuyin: "ㄅㄣˇ ㄌㄞˊ", pinyin: "běn lái", en: "originally" },
+            "住在": { zhuyin: "ㄓㄨˋ ㄗㄞˋ", pinyin: "zhù zài", en: "live in/at" },
+            "臺北": { zhuyin: "ㄊㄞˊ ㄅㄟˇ", pinyin: "tái běi", en: "Taipei" },
+            "退休": { zhuyin: "ㄊㄨㄟˋ ㄒㄧㄡ", pinyin: "tuì xiū", en: "retire" },
+            "舅舅": { zhuyin: "ㄐㄧㄡˋ ㄐㄧㄡ", pinyin: "jiù jiu", en: "uncle (maternal)" },
+            "臺南": { zhuyin: "ㄊㄞˊ ㄋㄢˊ", pinyin: "tái nán", en: "Tainan" },
+            "一次": { zhuyin: "ㄧˊ ㄘˋ", pinyin: "yí cì", en: "once" },
+            "紐約": { zhuyin: "ㄋㄧㄡˇ ㄩㄝ", pinyin: "niǔ yuē", en: "New York" },
+            "旅行": { zhuyin: "ㄌㄩˇ ㄒㄧㄥˊ", pinyin: "lǚ xíng", en: "travel" },
+            "法國": { zhuyin: "ㄈㄚˇ ㄍㄨㄛˊ", pinyin: "fǎ guó", en: "France" },
+            "動物園": { zhuyin: "ㄉㄨㄥˋ ㄨˋ ㄩㄢˊ", pinyin: "dòng wù yuán", en: "zoo" },
+            "玩": { zhuyin: "ㄨㄢˊ", pinyin: "wán", en: "play" },
+            "看到": { zhuyin: "ㄎㄢˋ ㄉㄠˋ", pinyin: "kàn dào", en: "to see" },
+            "大象": { zhuyin: "ㄉㄚˋ ㄒㄧㄤˋ", pinyin: "dà xiàng", en: "elephant" },
+            "老虎": { zhuyin: "ㄌㄠˇ ㄏㄨˇ", pinyin: "lǎo hǔ", en: "tiger" },
+            "這一次": { zhuyin: "ㄓㄜˋ ㄧˊ ㄘˋ", pinyin: "zhè yí cì", en: "this time" },
+            "希望": { zhuyin: "ㄒㄧ ㄨㄤˋ", pinyin: "xī wàng", en: "hope, wish" },
+            "猴子": { zhuyin: "ㄏㄡˊ ㄗ˙", pinyin: "hóu zi", en: "monkey" },
+            "不但": { zhuyin: "ㄅㄨˊ ㄉㄢˋ", pinyin: "bú dàn", en: "not only..." },
+            "企鵝": { zhuyin: "ㄑㄧˇ ㄜˊ", pinyin: "qǐ é", en: "penguin" },
+            "熊貓": { zhuyin: "ㄒㄩㄥˊ ㄇㄠ", pinyin: "xióng māo", en: "panda" },
+            "真": { zhuyin: "ㄓㄣ", pinyin: "zhēn", en: "really" },
+            "長頸鹿": { zhuyin: "ㄔㄤˊ ㄐㄧㄥˇ ㄌㄨˋ", pinyin: "cháng jǐng lù", en: "giraffe" },
+            "脖子": { zhuyin: "ㄅㄛˊ ㄗ˙", pinyin: "bó zi", en: "neck" },
+            "胖": { zhuyin: "ㄆㄤˋ", pinyin: "pàng", en: "fat" },
+            "長": { zhuyin: "ㄔㄤˊ", pinyin: "cháng", en: "long" },
+            "網路": { zhuyin: "ㄨㄤˇ ㄌㄨˋ", pinyin: "wǎng lù", en: "internet" },
+            "電話": { zhuyin: "ㄉㄧㄢˋ ㄏㄨㄚˋ", pinyin: "diàn huà", en: "telephone" },
+            "很久": { zhuyin: "ㄏㄣˇ ㄐㄧㄡˇ", pinyin: "hěn jiǔ", en: "a long time" },
+            "說話": { zhuyin: "ㄕㄨㄛ ㄏㄨㄚˋ", pinyin: "shuō huà", en: "talk, speak" },
+            "過來": { zhuyin: "ㄍㄨㄛˋ ㄌㄞˊ", pinyin: "guò lái", en: "come over" },
+            "長高": { zhuyin: "ㄓㄤˇ ㄍㄠ", pinyin: "zhǎng gāo", en: "grow tall" },
+            "看起來": { zhuyin: "ㄎㄢˋ ㄑㄧˇ ㄌㄞˊ", pinyin: "kàn qǐ lái", en: "look like" },
+            "影像": { zhuyin: "ㄧㄥˇ ㄒㄧㄤˋ", pinyin: "yǐng xiàng", en: "image" },
+            "瘦": { zhuyin: "ㄕㄡˋ", pinyin: "shòu", en: "thin" },
+            "啊": { zhuyin: "ㄚ", pinyin: "a", en: "(sentence particle)" },
+            "寫": { zhuyin: "ㄒㄧㄝˇ", pinyin: "xiě", en: "write" },
+            "上課": { zhuyin: "ㄕㄤˋ ㄎㄜˋ", pinyin: "shàng kè", en: "attend class" },
+            "有意思": { zhuyin: "ㄧㄡˇ ㄧˋ ㄙ˙", pinyin: "yǒu yì si", en: "interesting" },
+            "好好": { zhuyin: "ㄏㄠˇ ㄏㄠˇ", pinyin: "hǎo hǎo", en: "do a good job of" },
+            "信": { zhuyin: "ㄒㄧㄣˋ", pinyin: "xìn", en: "letter" },
+            "一定": { zhuyin: "ㄧˊ ㄉㄧㄥˋ", pinyin: "yí dìng", en: "definitely" },
+            "沒問題": { zhuyin: "ㄇㄟˊ ㄨㄣˋ ㄊㄧˊ", pinyin: "méi wèn tí", en: "no problem" }
+        };
+
+        // --- 完整例句資料庫 ---
+        const wordSentences = {
+            "新": "這是一本新書。", "現在": "請問現在幾點？", "介紹": "我來為大家介紹一下。", "自己": "我會自己洗碗。",
+            "大家": "大家好！歡迎來到這裡。", "今年": "今年是二〇二六年。", "跟": "我跟好朋友一起去圖書館。",
+            "游泳": "夏天到了，我最喜歡去游泳。", "比較": "今天的天氣比較涼快。", "看書": "睡覺前，我喜歡看書。",
+            "高興": "認識新朋友讓我很高興。", "認識": "你認識那位新同學嗎？", "歡迎": "歡迎來我們家玩！",
+            "華語": "我們一起學華語。", "學": "我正在學騎腳踏車。", "最": "我最喜歡吃香蕉。",
+            "方友朋": "方友朋是我的好同學。", "張莉": "張莉畫圖畫得很漂亮。",
+            "外公": "週末我們會回外公家。", "以前": "我以前不會游泳，現在會了。", "外婆": "外婆做的菜非常好吃。",
+            "做生意": "他的爸爸是做生意的。", "幫": "請你幫我拿一下書，好嗎？", "醫生": "生病了要去看醫生。",
+            "工作": "媽媽的工作非常忙碌。", "銀行": "我哥哥在銀行上班。", "一樣": "我們兩個人的書包是一樣的。",
+            "電腦公司": "他在一家很大的電腦公司上班。", "上班": "爸爸每天早上八點去上班。", "以後": "我長大以後想當醫生。",
+            "要": "我要一杯溫水，謝謝。",
+            "附近": "我家附近有一個很漂亮的公園。", "超級市場": "我們去超級市場買蘋果。", "東西": "桌子上放了很多東西。",
+            "巧克力": "我喜歡吃甜甜的巧克力。", "冰淇淋": "天氣好熱，我們來吃冰淇淋吧！", "買": "媽媽買了一件新衣服給我。",
+            "牛肉": "這碗牛肉麵非常美味。", "青菜": "多吃青菜對身體很好。", "米": "台灣的米很好吃。",
+            "可以": "請問我可以去上廁所嗎？", "糖果": "弟弟的口袋裡有一顆糖果。", "魚": "水裡有很多魚在游來游去。",
+            "週末": "週末我們全家要去爬山。", "漢堡": "這家速食店的漢堡很好吃。", "薯條": "我吃漢堡喜歡配薯條。",
+            "出去": "外面在下雨，我們不能出去玩。", "先": "你先去洗手，我們再吃飯。", "蛋炒飯": "我晚餐想吃蛋炒飯。",
+            "晚餐": "我們全家晚上六點一起吃晚餐。", "再": "請你再說一次好嗎？", "麵": "這碗湯麵很香。",
+            "了": "我的功課已經寫完了。", "湯": "今天晚上的熱湯很好喝。", "玉米": "我最喜歡喝玉米湯。",
+            "已經": "天已經黑了，該回家了。", "餓": "我的肚子好餓啊！", "快點": "電影要開始了，我們快點進去！",
+            "秋天": "秋天到了，天氣變涼了。", "樹葉": "秋天時，樹葉會掉下來。", "變": "冬天到了，天氣變冷了。",
+            "黃": "秋天的樹葉變成黃色的。", "草": "公園裡的草綠綠的。", "還是": "你要喝牛奶還是喝果汁？",
+            "綠色": "這棵樹有很多綠色的葉子。", "天氣": "今天的天氣非常好。", "舒服": "這張沙發坐起來很舒服。",
+            "春天": "春天來了，花都開了。", "不錯": "這家餐廳的菜味道很不錯。", "顏色": "你最喜歡什麼顏色？",
+            "時候": "你什麼時候要來我家玩？", "花": "花園裡開滿了漂亮的花。", "院子": "小狗在院子裡跑來跑去。",
+            "紅色": "妹妹穿了一件紅色的洋裝。", "白色": "天上有白色的雲。", "漂亮": "媽媽今天穿得很漂亮。",
+            "農曆": "今天是農曆大年初一。", "說": "老師說我們表現得很好。", "新年": "祝大家新年快樂！",
+            "華人": "過春節是華人的傳統。", "下": "下個月我們要去旅行。", "星期": "這個星期天是我的生日。",
+            "會": "我會說一點華語。", "年糕": "新年時我們會吃甜年糕。", "那天": "那天我們在公園玩得很開心。",
+            "給": "請把這本書給老師。", "拜年": "大年初一我們要去爺爺家拜年。", "台灣": "台灣的水果非常好吃。",
+            "每": "我每天早上都會喝一杯牛奶。", "紅包": "過年時長輩會給小孩子紅包。", "如果": "如果明天下雨，我們就待在家裡。",
+            "放鞭炮": "新年放鞭炮聽起來很熱鬧。", "貼春聯": "除夕夜我們會幫忙貼春聯。", "該": "時間很晚了，該睡覺了。",
+            "起床": "我每天早上七點起床。", "來不及": "快一點，上課要來不及了！", "累": "今天跑了很遠，覺得好累。",
+            "睡覺": "弟弟已經在房間裡睡覺了。", "趕快": "公車來了，我們趕快上車。", "刷牙": "每天早晚都要記得刷牙。",
+            "洗澡": "運動流汗後，要去洗澡。", "用": "我用肥皂把手洗乾淨。", "過": "我曾經去過日本玩。",
+            "別": "請別在圖書館裡大聲說話。", "昨天": "昨天晚上我做了一個好夢。", "忘": "出門別忘了帶鑰匙。",
+            "肥皂": "請用肥皂把手洗乾淨。", "知道": "你知道明天要考試嗎？", "洗": "吃蘋果前要先洗乾淨。",
+            "乾淨": "他把房間打掃得很乾淨。", "洗臉": "早上起床第一件事是洗臉。", "晚上": "晚上天空有很多星星。",
+            "送給": "這張卡片是我送給你的。", "隻": "樹上停了一隻小鳥。", "狗": "我們家養了一隻可愛的狗。",
+            "寵物": "你有養寵物嗎？", "帶": "出門記得帶雨傘。", "牠們": "動物園裡的猴子，牠們很有趣。",
+            "散步": "晚飯後我們去公園散步。", "去年": "去年暑假我們去了海邊。", "貓": "這隻白色的貓很愛睡覺。",
+            "上個月": "上個月我們學校舉辦了運動會。", "養": "我想養一隻小貓。", "不見了": "我的鉛筆盒不見了。",
+            "非常": "這部電影非常好看。", "可愛": "這隻小兔子真可愛。", "兔子": "兔子喜歡吃紅蘿蔔。",
+            "餵": "我每天早上都會餵小狗吃飯。", "指南針": "在森林裡迷路時，可以用指南針。", "指北針": "登山時要記得帶指北針。",
+            "它": "這是一本書，它很有趣。", "南方": "冬天時，南方的天氣比較溫暖。", "北方": "冬天時，北方會下雪。",
+            "教室": "我們的教室在二樓。", "告訴": "請告訴我圖書館怎麼走。", "方向": "你可以告訴我車站的方向嗎？",
+            "校門口": "我放學後在校門口等你。", "足球場": "哥哥在足球場踢球。", "東方": "太陽從東方升起。",
+            "西方": "太陽從西方落下。", "因為": "因為下雨，所以我沒有去公園。", "所以": "因為我生病了，所以今天請假。",
+            "暑假": "暑假時我參加了夏令營。", "看": "週末我會去看奶奶。", "本來": "我本來想出去玩，可是下雨了。",
+            "住在": "我的好朋友住在台北。", "臺北": "臺北有很有名的101大樓。", "退休": "爺爺已經退休，不用上班了。",
+            "舅舅": "舅舅帶我去遊樂園玩。", "臺南": "臺南的小吃非常有名。", "一次": "這是我第一次坐飛機。",
+            "紐約": "紐約是一個非常大的城市。", "旅行": "我們全家明年要去日本旅行。", "法國": "法國的麵包非常好吃。",
+            "動物園": "週末爸爸帶我去動物園。", "玩": "下課後我們一起去操場玩。", "看到": "我在公園看到一隻可愛的小狗。",
+            "大象": "動物園裡的大象有長長的鼻子。", "老虎": "老虎跑得非常快。", "這一次": "這一次的考試，我考了一百分。",
+            "希望": "我希望明天是個好天氣。", "猴子": "猴子在樹上爬來爬去。", "不但": "他不但在學校表現好，在家也很聽話。",
+            "企鵝": "企鵝走起路來搖搖晃晃的，真可愛。", "熊貓": "熊貓最喜歡吃竹子了。", "真": "今天的天氣真好啊！",
+            "長頸鹿": "長頸鹿的脖子很長，可以吃到樹上的葉子。", "脖子": "冬天出門要保護好脖子。", "胖": "這隻小貓吃得很胖。",
+            "長": "這條繩子非常長。", "網路": "我用網路查資料。", "電話": "晚上我打了電話給爺爺。",
+            "很久": "我等公車等了很久。", "說話": "上課時請不要一直說話。", "過來": "小狗聽到我的聲音就跑過來了。",
+            "長高": "你今年長高了好多喔！", "看起來": "這個蛋糕看起來非常好吃。", "影像": "我們可以透過網路看到對方的影像。",
+            "瘦": "他雖然吃很多，但還是很瘦。", "啊": "外面的風景好漂亮啊！", "寫": "我正在寫一封信給朋友。",
+            "上課": "我們早上八點開始上課。", "有意思": "這本故事書很有意思。", "好好": "週末可以在家好好休息。",
+            "信": "我收到了一封遠方朋友寄來的信。", "一定": "我明天一定會準時到。", "沒問題": "這件事交給我，絕對沒問題！"
+        };
+
         const translations = {
             zh: {
                 title: "詞彙忍者",
                 subtitle: "《學華語向前走》第二冊",
                 mode_desc1: "🎧 聽力挑戰模式！",
                 mode_desc2: "注意聽語音，<span class='text-yellow-300 font-bold'>切開與語音相符的生詞！</span>",
-                mode_desc3: "切錯生詞或切到炸彈(💣)會扣命！",
-                mode_desc4: "收集完全部生詞即可過關！",
-                collection_btn: "📚 我的圖鑑",
+                mode_desc3: "切錯生詞或切到炸彈(💣)會扣命！沒命時請切水果補血。",
+                mode_desc4: "收集完全部生詞即可過關！圖鑑內可聽造句。",
+                collection_btn: "📚 我的全域圖鑑",
                 score: "分數: ",
                 collect: "收集: ",
-                target_instruction: "聽語音，切出正確的字！",
-                toggle_hint: "👁️ 顯示/隱藏提示",
+                target_instruction: "點擊按鈕聽語音，切出正確的字！",
                 lesson_vocab_btn: "📖 本課生詞圖鑑",
                 lesson_prefix: "第 ",
                 lesson_suffix: " 課",
@@ -328,10 +601,6 @@
                 continue_game: "繼續遊戲",
                 global_col_title: "我的生詞圖鑑",
                 close_btn: "關閉",
-                game_over: "遊戲結束",
-                final_score: "最終分數: ",
-                play_again: "再玩一次",
-                back_menu: "回主選單",
                 win_title: "太棒了！過關！",
                 win_desc1: "你完成了第 ",
                 win_desc2: " 課的圖鑑收集！",
@@ -355,44 +624,40 @@
                 paused: "遊戲暫停",
                 resume: "繼續遊戲",
                 home: "回主選單",
+                select_lesson_title: "選擇關卡",
                 custom_btn: "☑️ 自訂複習 (勾選課別)",
                 custom_title: "選擇要複習的課別",
                 select_all: "全選",
                 clear_all: "全不選",
                 start_custom: "開始複習",
-                custom_mode: "自訂複習模式",
+                custom_mode: "自訂複習",
                 custom_win_text: "自訂複習",
                 alert_no_selection: "請至少選擇一課！",
                 generate_link: "🔗 複製連結",
                 link_copied: "✅ 連結已複製！分享給學生吧！",
                 speed_label: "遊戲速度:",
-                speed_slow: "🐢 慢速",
-                speed_normal: "🐇 正常",
-                speed_fast: "🐎 快速"
+                speed_slow: "🐢 慢速練習",
+                speed_normal: "🐇 正常挑戰",
+                speed_fast: "🐎 忍者大師"
             },
             en: {
                 title: "Vocab Ninja",
                 subtitle: "Let's Learn Mandarin - Vol 2",
                 mode_desc1: "🎧 Listening Challenge!",
                 mode_desc2: "Listen carefully and <span class='text-yellow-300 font-bold'>slice the matching word!</span>",
-                mode_desc3: "Slicing wrong words or bombs (💣) costs a life!",
-                mode_desc4: "Collect all words to pass the level!",
+                mode_desc3: "Slicing wrong words or bombs (💣) costs a life! Slice fruits to heal.",
+                mode_desc4: "Collect all words to pass the level! Tap vocab for sentences.",
                 collection_btn: "📚 My Collection",
                 score: "Score: ",
                 collect: "Collected: ",
                 target_instruction: "Listen & slice the correct word!",
-                toggle_hint: "👁️ Toggle Hint",
                 lesson_vocab_btn: "📖 Lesson Vocab",
                 lesson_prefix: "Lesson ",
-                lesson_suffix: "",
+                lesson_suffix: "", // No suffix in English
                 lesson_suffix_modal: " Collection",
                 continue_game: "Continue",
                 global_col_title: "My Vocab Collection",
                 close_btn: "Close",
-                game_over: "Game Over",
-                final_score: "Final Score: ",
-                play_again: "Play Again",
-                back_menu: "Main Menu",
                 win_title: "Awesome! Cleared!",
                 win_desc1: "You completed Lesson ",
                 win_desc2: " collection!",
@@ -416,12 +681,13 @@
                 paused: "Game Paused",
                 resume: "Resume",
                 home: "Main Menu",
+                select_lesson_title: "Select Level",
                 custom_btn: "☑️ Custom Review",
                 custom_title: "Select Lessons to Review",
                 select_all: "Select All",
                 clear_all: "Clear All",
                 start_custom: "Start Review",
-                custom_mode: "Custom Review Mode",
+                custom_mode: "Custom Review",
                 custom_win_text: "Custom Review",
                 alert_no_selection: "Please select at least one lesson!",
                 generate_link: "🔗 Copy Link",
@@ -434,8 +700,6 @@
         };
 
         function t(key) {
-            // Fix: If the key is 'lesson_suffix' and the language is 'en', explicitly return an empty string.
-            // Otherwise, normal fallback logic applies.
             if (currentLang === 'en' && key === 'lesson_suffix') return '';
             return translations[currentLang][key] || key;
         }
@@ -468,8 +732,8 @@
 
             if(!isPlaying) renderGlobalCollection();
             
-            if(isPlaying && targetWord === "") {
-                document.getElementById('targetWordText').innerText = t('ready');
+            if(isPlaying && targetWord !== "") {
+                updateTargetUI(); 
             }
         }
 
@@ -488,9 +752,16 @@
             if (modal.classList.contains('hidden')) {
                 renderGlobalCollection();
                 modal.classList.remove('hidden');
+                modal.classList.add('flex');
             } else {
                 modal.classList.add('hidden');
+                modal.classList.remove('flex');
             }
+        }
+
+        function speakSentence(word) {
+            let sentence = wordSentences[word] || word;
+            speakWord(sentence);
         }
 
         function renderGlobalCollection() {
@@ -507,14 +778,14 @@
                     if (count > 0) collectedInLesson++;
                     
                     if (count > 0) {
-                        wordHtml += `<div class="flex flex-col items-center justify-center p-2 rounded bg-green-900 border border-green-500 text-green-100">
-                            <span class="text-lg font-bold">${w}</span>
-                            <span class="text-xs bg-green-700 px-2 rounded-full mt-1">x${count}</span>
+                        wordHtml += `<div onclick="speakSentence('${w}')" class="flex flex-col items-center justify-center p-2 rounded-xl bg-green-900 border-2 border-green-500 text-green-100 shadow-inner cursor-pointer hover:bg-green-800 transition transform active:scale-95">
+                            <span class="text-xl font-bold flex items-center gap-1">${w} <span class="text-sm">🔊</span></span>
+                            <span class="text-xs bg-green-700 px-2 py-0.5 rounded-full mt-1">x${count}</span>
                         </div>`;
                     } else {
-                        wordHtml += `<div class="flex flex-col items-center justify-center p-2 rounded bg-gray-800 border border-gray-700 text-gray-500">
-                            <span class="text-lg font-bold filter blur-[2px] opacity-50">${w}</span>
-                            <span class="text-xs bg-gray-700 px-2 rounded-full mt-1">${t('uncollected')}</span>
+                        wordHtml += `<div class="flex flex-col items-center justify-center p-2 rounded-xl bg-gray-800 border-2 border-gray-700 text-gray-500">
+                            <span class="text-xl font-bold filter blur-[2px] opacity-40">${w}</span>
+                            <span class="text-xs bg-gray-700 px-2 py-0.5 rounded-full mt-1">${t('uncollected')}</span>
                         </div>`;
                     }
                 });
@@ -522,12 +793,12 @@
                 let progressColor = collectedInLesson === lessonWords.length ? 'text-green-400' : 'text-yellow-400';
                 
                 html += `
-                <div class="bg-gray-800 p-4 rounded-xl shadow-inner">
-                    <h3 class="text-xl font-bold mb-3 ${progressColor} border-b border-gray-600 pb-2">
-                        ${t('lesson_prefix')}${i}${t('lesson_suffix')} 
-                        <span class="text-sm float-right bg-black bg-opacity-30 px-3 py-1 rounded-full">${collectedInLesson} / ${lessonWords.length}</span>
+                <div class="bg-gray-800 p-5 rounded-2xl shadow-lg border border-gray-700">
+                    <h3 class="text-2xl font-bold mb-4 ${progressColor} border-b-2 border-gray-600 pb-2 flex justify-between items-center">
+                        <span>${t('lesson_prefix')}${i}${t('lesson_suffix')}</span>
+                        <span class="text-base bg-black bg-opacity-40 px-4 py-1 rounded-full text-white">${collectedInLesson} / ${lessonWords.length}</span>
                     </h3>
-                    <div class="grid grid-cols-3 md:grid-cols-5 gap-2">
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
                         ${wordHtml}
                     </div>
                 </div>`;
@@ -541,7 +812,7 @@
             for(let i = 1; i <= 12; i++) {
                 html += `<button class="lesson-btn" onclick="startGame(${i})">${t('lesson_prefix')}${i}${t('lesson_suffix')}</button>`;
             }
-            html += `<button class="lesson-btn col-span-3 md:col-span-4 mt-1 bg-blue-600 hover:bg-blue-500 border-blue-300" onclick="toggleCustomModal()">${t('custom_btn')}</button>`;
+            html += `<button class="lesson-btn col-span-2 md:col-span-3 mt-2 bg-blue-600 hover:bg-blue-500 border-blue-300 py-3" onclick="toggleCustomModal()">${t('custom_btn')}</button>`;
             container.innerHTML = html;
         }
 
@@ -551,8 +822,10 @@
                 renderCustomCheckboxes();
                 document.getElementById('customWarning').classList.add('hidden');
                 modal.classList.remove('hidden');
+                modal.classList.add('flex');
             } else {
                 modal.classList.add('hidden');
+                modal.classList.remove('flex');
             }
         }
 
@@ -563,7 +836,7 @@
                 html += `
                 <label class="cursor-pointer relative">
                     <input type="checkbox" class="peer sr-only custom-lesson-cb" value="${i}">
-                    <div class="rounded-lg border-2 border-gray-600 px-2 py-2 text-center text-gray-300 peer-checked:bg-blue-600 peer-checked:border-blue-400 peer-checked:text-white font-bold transition-all text-sm md:text-base">
+                    <div class="rounded-lg border-2 border-gray-600 px-2 py-3 text-center text-gray-300 peer-checked:bg-blue-600 peer-checked:border-blue-400 peer-checked:text-white font-bold transition-all text-sm md:text-base">
                         ${t('lesson_prefix')}${i}${t('lesson_suffix')}
                     </div>
                 </label>`;
@@ -571,65 +844,44 @@
             container.innerHTML = html;
         }
 
-        function selectAllCustom() {
-            document.querySelectorAll('.custom-lesson-cb').forEach(cb => cb.checked = true);
-        }
-
-        function clearAllCustom() {
-            document.querySelectorAll('.custom-lesson-cb').forEach(cb => cb.checked = false);
-        }
+        function selectAllCustom() { document.querySelectorAll('.custom-lesson-cb').forEach(cb => cb.checked = true); }
+        function clearAllCustom() { document.querySelectorAll('.custom-lesson-cb').forEach(cb => cb.checked = false); }
 
         function startCustomGame() {
             const selected = Array.from(document.querySelectorAll('.custom-lesson-cb:checked')).map(cb => parseInt(cb.value));
-            if (selected.length === 0) {
-                document.getElementById('customWarning').classList.remove('hidden');
-                return;
-            }
-            toggleCustomModal();
-            startGame(selected);
+            if (selected.length === 0) { document.getElementById('customWarning').classList.remove('hidden'); return; }
+            toggleCustomModal(); startGame(selected);
         }
 
         function showToast(messageKey) {
             const toast = document.getElementById('toastNotification');
             const toastText = document.getElementById('toastText');
             toastText.innerText = t(messageKey);
-            toast.classList.remove('opacity-0');
-            toast.classList.add('opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0');
-            }, 3000);
+            toast.classList.remove('opacity-0'); toast.classList.add('opacity-100');
+            setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0'); }, 3000);
         }
 
         function generateCustomLink() {
             const selected = Array.from(document.querySelectorAll('.custom-lesson-cb:checked')).map(cb => parseInt(cb.value));
-            if (selected.length === 0) {
-                document.getElementById('customWarning').classList.remove('hidden');
-                return;
-            }
+            if (selected.length === 0) { document.getElementById('customWarning').classList.remove('hidden'); return; }
             
             const baseUrl = window.location.origin + window.location.pathname;
             const shareUrl = `${baseUrl}?lessons=${selected.join(',')}`;
             
-            const tempInput = document.createElement("input");
-            tempInput.value = shareUrl;
-            document.body.appendChild(tempInput);
+            const tempInput = document.createElement("input"); tempInput.value = shareUrl; document.body.appendChild(tempInput);
             tempInput.select();
-            try {
-                document.execCommand("copy");
-                showToast('link_copied');
-            } catch (err) {
-                console.error('無法複製連結', err);
-            }
+            try { document.execCommand("copy"); showToast('link_copied'); } catch (err) { console.error('無法複製連結', err); }
             document.body.removeChild(tempInput);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('playerName').value = playerName;
             
-            // 讀取設定好的速度並更新 UI
             let selectElement = document.getElementById('gameSpeedSelect');
-            if(selectElement) selectElement.value = selectedGameSpeed;
+            if(selectElement) {
+                if (!localStorage.getItem('ninja_speed') || isNaN(selectedGameSpeed)) selectedGameSpeed = 1.0;
+                selectElement.value = selectedGameSpeed;
+            }
 
             renderLessonButtons();
             applyLanguage();
@@ -637,19 +889,14 @@
             const params = new URLSearchParams(window.location.search);
             const lessonsParam = params.get('lessons');
             if (lessonsParam) {
-                const lessonIds = lessonsParam.split(',')
-                    .map(n => parseInt(n))
-                    .filter(n => !isNaN(n) && n >= 1 && n <= 12);
-                
-                if (lessonIds.length > 0) {
-                    setTimeout(() => startGame(lessonIds), 500);
-                }
+                const lessonIds = lessonsParam.split(',').map(n => parseInt(n)).filter(n => !isNaN(n) && n >= 1 && n <= 12);
+                if (lessonIds.length > 0) setTimeout(() => startGame(lessonIds), 500);
             }
         });
 
         const lessonData = {
             1: ["比較","大家","方友朋","高興","跟","歡迎","今年","介紹","自己","看書","認識","現在","新","學","游泳","最","華語","張莉"],
-            2: ["幫","電腦公司","工作","上班","外公","外婆","一樣","以前","銀行","醫生","做生意"],
+            2: ["幫","電腦公司","工作","上班","外公","外婆","一樣","以前","銀行","醫生","做生意","以後"],
             3: ["冰淇淋","超級市場","東西","附近","可以","米","買","牛肉","巧克力","青菜","糖果","要","魚"],
             4: ["出去","蛋炒飯","餓","漢堡","快點","了","麵","薯條","湯","晚餐","先","已經","玉米","再","週末"],
             5: ["變","不錯","白色","春天","草","紅色","黃","還是","花","了","綠色","漂亮","秋天","時候","樹葉","天氣","院子","顏色","舒服"],
@@ -662,816 +909,286 @@
             12: ["啊","過來","很久","好好","看起來","沒問題","上課","說話","瘦","網路","寫","信","有意思","一定","影像","長高"]
         };
 
-        let currentVocabList = [];
-        let currentLesson = 0;
-        let wordCollection = {};
-        let currentCustomLessons = [];
-
-        let targetWord = "";
-        let isTextHidden = true;
-        let fruitColors = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#E02020', '#F7B500'];
-
-        let width, height;
-        let score = 0;
-        let lives = 3;
-        let combo = 0; 
-        let isPlaying = false;
-        let isPaused = false;
-        let animationId;
-
-        let isAudioReady = false;
-        let explosionSynth;
-        let sliceSynth;
-        let errorSynth;
+        let currentVocabList = []; let currentLesson = 0; let wordCollection = {}; let currentCustomLessons = [];
+        let targetWord = ""; let fruitColors = ['#FF3B30', '#FF9500', '#FFCC00', '#4CD964', '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55', '#E02020', '#F7B500'];
+        let width, height; let score = 0; let lives = 3; let combo = 0; let isPlaying = false; let isPaused = false; let animationId;
+        let isAudioReady = false; let explosionSynth, sliceSynth, errorSynth;
 
         function initToneAudio() {
-            if (isAudioReady) return;
-            Tone.start();
-            
-            explosionSynth = new Tone.NoiseSynth({
-                noise: { type: "brown" },
-                envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.2 }
-            }).toDestination();
+            if (isAudioReady) return; Tone.start();
+            explosionSynth = new Tone.NoiseSynth({ noise: { type: "brown" }, envelope: { attack: 0.01, decay: 0.5, sustain: 0, release: 0.2 } }).toDestination();
             explosionSynth.volume.value = -5;
-
-            sliceSynth = new Tone.PolySynth(Tone.Synth, {
-                oscillator: { type: "triangle" },
-                envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 }
-            }).toDestination();
+            sliceSynth = new Tone.PolySynth(Tone.Synth, { oscillator: { type: "triangle" }, envelope: { attack: 0.005, decay: 0.1, sustain: 0, release: 0.1 } }).toDestination();
             sliceSynth.volume.value = -2;
-
-            errorSynth = new Tone.Synth({
-                oscillator: { type: "sawtooth" },
-                envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
-            }).toDestination();
+            errorSynth = new Tone.Synth({ oscillator: { type: "sawtooth" }, envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 } }).toDestination();
             errorSynth.volume.value = -5;
-
             isAudioReady = true;
         }
 
-        function playExplosionSound() {
-            if (isAudioReady && explosionSynth) {
-                explosionSynth.triggerAttackRelease("4n", Tone.now());
-            }
-        }
-
-        function playSliceSound() {
-            if (isAudioReady && sliceSynth) {
-                let now = Tone.now();
-                sliceSynth.triggerAttackRelease("G6", "16n", now);
-                sliceSynth.triggerAttackRelease("C6", "16n", now + 0.04);
-            }
-        }
-        
-        function playErrorSound() {
-            if (isAudioReady && errorSynth) {
-                errorSynth.triggerAttackRelease("C3", "8n", Tone.now());
-            }
-        }
-
-        let fruits = [];
-        let particles = [];
-        let splashTexts = [];
-        
-        let bladeTrail = [];
-        const MAX_TRAIL_LENGTH = 10;
-        let isSwiping = false;
-
-        let gameFlags = { bounce: false, bomb: false, hard: false };
-        let announcement = { text: "", life: 0 };
-
-        let scaleFactor = 1;
-
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            
-            scaleFactor = Math.max(0.8, Math.min(height / 800, 1.8));
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        function playExplosionSound() { if (isAudioReady) explosionSynth.triggerAttackRelease("4n", Tone.now()); }
+        function playSliceSound() { if (isAudioReady) { let now = Tone.now(); sliceSynth.triggerAttackRelease("G6", "16n", now); sliceSynth.triggerAttackRelease("C6", "16n", now + 0.04); } }
+        function playErrorSound() { if (isAudioReady) errorSynth.triggerAttackRelease("C3", "8n", Tone.now()); }
 
         let preferredVoice = null;
         function loadVoices() {
             if (!('speechSynthesis' in window)) return;
-            const voices = window.speechSynthesis.getVoices();
-            if (voices.length === 0) return;
-
-            // 優先選擇聽起來比較自然、像真人的神經網路語音 (Google, Microsoft 等)
-            const preferredVoiceNames = [
-                'Google 國語',
-                'Google Mandarin',
-                'Microsoft Yating',
-                'Microsoft Hanhan',
-                'Microsoft Xiaoxiao',
-                'Mei-Jia',
-                'Sin-Ji'
-            ];
-
-            for (let name of preferredVoiceNames) {
-                let voice = voices.find(v => v.name.includes(name));
-                if (voice) {
-                    preferredVoice = voice;
-                    return;
-                }
-            }
-            
-            // 如果沒有找到特定的真人語音，找一個標準的台灣中文語音
-            if (!preferredVoice) {
-                preferredVoice = voices.find(v => v.lang === 'zh-TW' || v.lang === 'zh-tw');
-            }
+            const voices = window.speechSynthesis.getVoices(); if (voices.length === 0) return;
+            const preferredVoiceNames = ['Google 國語', 'Google Mandarin', 'Microsoft Yating', 'Microsoft HsiaoChen', 'Microsoft Hanhan', 'Microsoft Xiaoxiao', 'Mei-Jia', 'Sin-Ji'];
+            for (let name of preferredVoiceNames) { let voice = voices.find(v => v.name.includes(name)); if (voice) { preferredVoice = voice; return; } }
+            if (!preferredVoice) preferredVoice = voices.find(v => v.lang.toLowerCase().includes('zh-tw'));
         }
 
-        // 監聽語音庫載入完成事件 (特別是 Chrome 需要)
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.onvoiceschanged = loadVoices;
-            loadVoices();
-        }
+        if ('speechSynthesis' in window) { window.speechSynthesis.onvoiceschanged = loadVoices; loadVoices(); }
 
         function speakWord(text) {
             try {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = 'zh-TW';
-                    utterance.rate = 0.95; // 稍微放慢一點點，聽起來更像真人在說話
-                    
-                    // 如果有找到較好的真人語音，則套用它
-                    if (preferredVoice) {
-                        utterance.voice = preferredVoice;
-                    }
-                    
+                    const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'zh-TW'; utterance.rate = 0.95; 
+                    if (preferredVoice) utterance.voice = preferredVoice;
                     window.speechSynthesis.speak(utterance);
                 }
-            } catch(e) {
-                console.error("Speech synthesis error", e);
-            }
+            } catch(e) { console.error("Speech synthesis error", e); }
         }
 
-        function announce(text) {
-            announcement.text = text;
-            announcement.life = 150; 
-        }
+        function announce(text) { announcement.text = text; announcement.life = 150; }
+
+        let fruits = []; let particles = []; let splashTexts = []; let bladeTrail = []; const MAX_TRAIL_LENGTH = 10; let isSwiping = false;
+        let gameFlags = { bounce: false, bomb: false, hard: false }; let announcement = { text: "", life: 0 }; let scaleFactor = 1;
+
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; scaleFactor = Math.max(0.8, Math.min(height / 800, 1.8)); }
+        window.addEventListener('resize', resize); resize();
 
         class WordFruit {
             constructor(specificWord = null) {
-                this.isBomb = false;
-                this.isHeal = false;
+                this.isBomb = false; this.isHeal = false;
                 this.word = specificWord || currentVocabList[Math.floor(Math.random() * currentVocabList.length)];
                 this.color = fruitColors[Math.floor(Math.random() * fruitColors.length)];
-                
-                let baseRadius = 40 + (this.word.length - 1) * 15;
-                this.radius = baseRadius * scaleFactor;
-                
-                this.x = Math.random() * (width - this.radius * 2) + this.radius;
-                this.y = height + this.radius;
-                
+                this.radius = (40 + (this.word.length - 1) * 15) * scaleFactor;
+                this.x = Math.random() * (width - this.radius * 2) + this.radius; this.y = height + this.radius;
                 this.vx = (Math.random() - 0.5) * 4;
-                let jumpBoost = gameFlags.hard ? 1.5 : 0;
-                this.vy = -(Math.random() * 3 + 12 + jumpBoost) * (height / 800); 
-                
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.05; 
-                
-                this.isCut = false;
-                this.halves = [];
-
+                let jumpBoost = gameFlags.hard ? 1.5 : 0; this.vy = -(Math.random() * 3 + 12 + jumpBoost) * (height / 800); 
+                this.rotation = Math.random() * Math.PI * 2; this.rotationSpeed = (Math.random() - 0.5) * 0.05; 
+                this.isCut = false; this.halves = [];
                 this.canBounce = gameFlags.hard ? (Math.random() > 0.2) : (gameFlags.bounce ? Math.random() > 0.4 : false);
             }
-
             update() {
-                // 應用速度縮放乘數 (selectedGameSpeed) 來控制時間流逝
                 if (!this.isCut) {
-                    this.x += this.vx * selectedGameSpeed;
-                    this.y += this.vy * selectedGameSpeed;
-                    this.vy += 0.15 * selectedGameSpeed; 
-                    this.rotation += this.rotationSpeed * selectedGameSpeed;
-
+                    this.x += this.vx * selectedGameSpeed; this.y += this.vy * selectedGameSpeed; this.vy += 0.15 * selectedGameSpeed; this.rotation += this.rotationSpeed * selectedGameSpeed;
                     if (this.canBounce) {
-                        if (this.x - this.radius < 0) {
-                            this.x = this.radius;
-                            this.vx *= -0.9; 
-                        } else if (this.x + this.radius > width) {
-                            this.x = width - this.radius;
-                            this.vx *= -0.9;
-                        }
+                        if (this.x - this.radius < 0) { this.x = this.radius; this.vx *= -0.9; } else if (this.x + this.radius > width) { this.x = width - this.radius; this.vx *= -0.9; }
                     }
                 } else {
-                    for (let half of this.halves) {
-                        half.x += half.vx * selectedGameSpeed;
-                        half.y += half.vy * selectedGameSpeed;
-                        half.vy += 0.2 * selectedGameSpeed; 
-                        half.rotation += half.rotationSpeed * selectedGameSpeed;
-                    }
+                    for (let half of this.halves) { half.x += half.vx * selectedGameSpeed; half.y += half.vy * selectedGameSpeed; half.vy += 0.2 * selectedGameSpeed; half.rotation += half.rotationSpeed * selectedGameSpeed; }
                 }
             }
-
             draw() {
                 if (!this.isCut) {
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.rotation);
-                    
-                    ctx.beginPath();
-                    ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = this.color;
-                    ctx.fill();
-                    ctx.lineWidth = 4;
-                    ctx.strokeStyle = '#fff';
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.arc(-this.radius*0.3, -this.radius*0.3, this.radius*0.2, 0, Math.PI * 2);
-                    ctx.fillStyle = 'rgba(255,255,255,0.3)';
-                    ctx.fill();
-
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    let fontSize = this.radius * 0.6;
-                    if(this.word.length > 3) fontSize = this.radius * 0.45;
-                    ctx.font = `900 ${fontSize}px 'Noto Sans TC'`;
-                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-                    ctx.shadowBlur = 4;
-                    ctx.fillText(this.word, 0, 0);
-                    
-                    ctx.restore();
+                    ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                    ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
+                    ctx.beginPath(); ctx.arc(-this.radius*0.3, -this.radius*0.3, this.radius*0.2, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.3)'; ctx.fill();
+                    ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    let fontSize = this.radius * 0.6; if(this.word.length > 3) fontSize = this.radius * 0.45;
+                    ctx.font = `900 ${fontSize}px 'Noto Sans TC'`; ctx.shadowColor = 'rgba(0,0,0,0.5)'; ctx.shadowBlur = 4; ctx.fillText(this.word, 0, 0); ctx.restore();
                 } else {
                     for (let half of this.halves) {
-                        ctx.save();
-                        ctx.translate(half.x, half.y);
-                        ctx.rotate(half.rotation);
-                        
-                        ctx.beginPath();
-                        ctx.arc(0, 0, this.radius, half.startAngle, half.endAngle);
-                        ctx.fillStyle = this.color;
-                        ctx.fill();
-                        ctx.lineWidth = 4;
-                        ctx.strokeStyle = '#fff';
-                        ctx.stroke();
-
-                        ctx.restore();
+                        ctx.save(); ctx.translate(half.x, half.y); ctx.rotate(half.rotation);
+                        ctx.beginPath(); ctx.arc(0, 0, this.radius, half.startAngle, half.endAngle); ctx.fillStyle = this.color; ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke(); ctx.restore();
                     }
                 }
             }
-
             cut(velocityVector) {
-                this.isCut = true;
-                let angle = Math.atan2(velocityVector.y, velocityVector.x);
-                
+                this.isCut = true; let angle = Math.atan2(velocityVector.y, velocityVector.x);
                 this.halves = [
-                    {
-                        x: this.x, y: this.y,
-                        vx: this.vx + Math.cos(angle - Math.PI/2) * 3,
-                        vy: this.vy + Math.sin(angle - Math.PI/2) * 3,
-                        rotation: this.rotation,
-                        rotationSpeed: this.rotationSpeed - 0.05,
-                        startAngle: angle,
-                        endAngle: angle + Math.PI
-                    },
-                    {
-                        x: this.x, y: this.y,
-                        vx: this.vx + Math.cos(angle + Math.PI/2) * 3,
-                        vy: this.vy + Math.sin(angle + Math.PI/2) * 3,
-                        rotation: this.rotation,
-                        rotationSpeed: this.rotationSpeed + 0.05,
-                        startAngle: angle + Math.PI,
-                        endAngle: angle + Math.PI * 2
-                    }
+                    { x: this.x, y: this.y, vx: this.vx + Math.cos(angle - Math.PI/2) * 3, vy: this.vy + Math.sin(angle - Math.PI/2) * 3, rotation: this.rotation, rotationSpeed: this.rotationSpeed - 0.05, startAngle: angle, endAngle: angle + Math.PI },
+                    { x: this.x, y: this.y, vx: this.vx + Math.cos(angle + Math.PI/2) * 3, vy: this.vy + Math.sin(angle + Math.PI/2) * 3, rotation: this.rotation, rotationSpeed: this.rotationSpeed + 0.05, startAngle: angle + Math.PI, endAngle: angle + Math.PI * 2 }
                 ];
-
                 if (this.word === targetWord) {
-                    playSliceSound(); 
-                    
-                    for(let i=0; i<8; i++) {
-                        particles.push(new Particle(this.x, this.y, this.color));
-                    }
-                    
-                    combo++;
-                    let earnedPoints = combo > 1 ? combo : 1;
-                    score += earnedPoints;
-                    document.getElementById('scoreDisplay').innerText = score;
-                    
+                    playSliceSound(); for(let i=0; i<8; i++) particles.push(new Particle(this.x, this.y, this.color));
+                    combo++; let earnedPoints = combo > 1 ? combo : 1; score += earnedPoints; document.getElementById('scoreDisplay').innerText = score;
                     splashTexts.push(new SplashText(t('correct'), this.x, this.y, '#34D399'));
-                    if (combo > 1) {
-                        splashTexts.push(new SplashText(`Combo x${combo}! (+${earnedPoints})`, this.x, this.y - 65, '#F59E0B'));
-                    }
-
+                    if (combo > 1) splashTexts.push(new SplashText(`Combo x${combo}! (+${earnedPoints})`, this.x, this.y - 65, '#F59E0B'));
                     saveGlobalWord(this.word);
-
                     if (wordCollection[this.word] !== undefined) {
-                        if (wordCollection[this.word] === 0) {
-                            splashTexts.push(new SplashText(t('collected'), this.x, this.y - 30, '#34D399'));
-                        }
-                        wordCollection[this.word]++;
-                        updateCollectionHUD();
+                        if (wordCollection[this.word] === 0) splashTexts.push(new SplashText(t('collected'), this.x, this.y - 30, '#34D399'));
+                        wordCollection[this.word]++; updateCollectionHUD();
                     }
-
                     checkDifficultyProgress();
-
-                    let allCollected = true;
-                    for (let w of currentVocabList) {
-                        if (!wordCollection[w] || wordCollection[w] < 1) {
-                            allCollected = false;
-                            break;
-                        }
-                    }
-                    
-                    if (allCollected) {
-                        setTimeout(() => winGame(), 600);
-                    } else {
-                        setTimeout(() => pickNewTargetWord(), 300);
-                    }
+                    let allCollected = true; for (let w of currentVocabList) { if (!wordCollection[w] || wordCollection[w] < 1) { allCollected = false; break; } }
+                    if (allCollected) setTimeout(() => winGame(), 600); else setTimeout(() => pickNewTargetWord(), 300);
                 } else {
-                    speakWord(t('wrong_speech'));
-                    playErrorSound();
-                    
-                    combo = 0; 
-                    
-                    for(let i=0; i<8; i++) {
-                        particles.push(new Particle(this.x, this.y, '#FF3B30'));
-                    }
+                    speakWord(t('wrong_speech')); playErrorSound(); combo = 0; for(let i=0; i<8; i++) particles.push(new Particle(this.x, this.y, '#FF3B30'));
                     splashTexts.push(new SplashText(t('wrong'), this.x, this.y, '#FF3B30'));
-                    
-                    lives--;
-                    if (lives < 0) lives = 0;
-                    updateLivesDisplay();
-                    
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.6)';
-                    ctx.fillRect(0, 0, width, height);
+                    lives--; if (lives < 0) lives = 0; updateLivesDisplay(); ctx.fillStyle = 'rgba(255, 0, 0, 0.6)'; ctx.fillRect(0, 0, width, height);
                 }
             }
         }
 
         class Bomb {
             constructor() {
-                this.isBomb = true;
-                this.isHeal = false;
-                this.radius = 35 * scaleFactor;
-                this.x = Math.random() * (width - this.radius * 2) + this.radius;
-                this.y = height + this.radius;
-                this.vx = (Math.random() - 0.5) * 4;
-                let jumpBoost = gameFlags.hard ? 1.5 : 0;
-                this.vy = -(Math.random() * 3 + 12 + jumpBoost) * (height / 800); 
-                
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
-                
-                this.isCut = false;
-                this.canBounce = (Math.random() > 0.5);
+                this.isBomb = true; this.isHeal = false; this.radius = 35 * scaleFactor;
+                this.x = Math.random() * (width - this.radius * 2) + this.radius; this.y = height + this.radius;
+                this.vx = (Math.random() - 0.5) * 4; let jumpBoost = gameFlags.hard ? 1.5 : 0; this.vy = -(Math.random() * 3 + 12 + jumpBoost) * (height / 800); 
+                this.rotation = Math.random() * Math.PI * 2; this.rotationSpeed = (Math.random() - 0.5) * 0.05; this.isCut = false; this.canBounce = (Math.random() > 0.5);
             }
-
             update() {
-                if (this.isCut) return; 
-                this.x += this.vx * selectedGameSpeed;
-                this.y += this.vy * selectedGameSpeed;
-                this.vy += 0.15 * selectedGameSpeed;
-                this.rotation += this.rotationSpeed * selectedGameSpeed;
-                
-                if (this.canBounce) {
-                    if (this.x - this.radius < 0) {
-                        this.x = this.radius;
-                        this.vx *= -0.9;
-                    } else if (this.x + this.radius > width) {
-                        this.x = width - this.radius;
-                        this.vx *= -0.9;
-                    }
-                }
+                if (this.isCut) return; this.x += this.vx * selectedGameSpeed; this.y += this.vy * selectedGameSpeed; this.vy += 0.15 * selectedGameSpeed; this.rotation += this.rotationSpeed * selectedGameSpeed;
+                if (this.canBounce) { if (this.x - this.radius < 0) { this.x = this.radius; this.vx *= -0.9; } else if (this.x + this.radius > width) { this.x = width - this.radius; this.vx *= -0.9; } }
             }
-
             draw() {
-                if (this.isCut) return;
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#111';
-                ctx.fill();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#e53e3e';
-                ctx.stroke();
-                
-                ctx.beginPath();
-                ctx.arc(-this.radius*0.3, -this.radius*0.3, this.radius*0.2, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255,255,255,0.2)';
-                ctx.fill();
-                
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = `900 ${this.radius * 0.8}px 'Noto Sans TC'`;
-                ctx.fillText("💣", 0, 0);
-                
-                ctx.restore();
+                if (this.isCut) return; ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fillStyle = '#111'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#e53e3e'; ctx.stroke();
+                ctx.beginPath(); ctx.arc(-this.radius*0.3, -this.radius*0.3, this.radius*0.2, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255,255,255,0.2)'; ctx.fill();
+                ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${this.radius * 0.8}px 'Noto Sans TC'`; ctx.fillText("💣", 0, 0); ctx.restore();
             }
-
             cut(velocityVector) {
-                this.isCut = true;
-                speakWord(t('bomb_speech'));
-                playExplosionSound();
-                
-                combo = 0;
-                
-                for(let i=0; i<20; i++) {
-                    particles.push(new Particle(this.x, this.y, '#FF3B30', true));
-                }
-                splashTexts.push(new SplashText(t('minus_life'), this.x, this.y, '#FF3B30'));
-                
-                lives--;
-                if (lives < 0) lives = 0;
-                updateLivesDisplay();
-                
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.6)';
-                ctx.fillRect(0, 0, width, height);
+                this.isCut = true; speakWord(t('bomb_speech')); playExplosionSound(); combo = 0; for(let i=0; i<20; i++) particles.push(new Particle(this.x, this.y, '#FF3B30', true));
+                splashTexts.push(new SplashText(t('minus_life'), this.x, this.y, '#FF3B30')); lives--; if (lives < 0) lives = 0; updateLivesDisplay();
+                ctx.fillStyle = 'rgba(255, 0, 0, 0.6)'; ctx.fillRect(0, 0, width, height);
             }
         }
 
         class HealFruit {
             constructor() {
-                this.isBomb = false;
-                this.isHeal = true;
-                this.radius = 35 * scaleFactor;
-                this.x = Math.random() * (width - this.radius * 2) + this.radius;
-                this.y = height + this.radius;
-                
-                this.vx = (Math.random() - 0.5) * 3;
-                this.vy = -(Math.random() * 2 + 11) * (height / 800); 
-                
-                this.rotation = Math.random() * Math.PI * 2;
-                this.rotationSpeed = (Math.random() - 0.5) * 0.03;
-                
-                this.isCut = false;
-                
-                const healFruits = ['🍉', '🍇', '🍓', '🍌', '🍒', '🍑', '🍍', '🥝', '🍊', '🍈'];
-                this.fruitEmoji = healFruits[Math.floor(Math.random() * healFruits.length)];
+                this.isBomb = false; this.isHeal = true; this.radius = 35 * scaleFactor;
+                this.x = Math.random() * (width - this.radius * 2) + this.radius; this.y = height + this.radius;
+                this.vx = (Math.random() - 0.5) * 3; this.vy = -(Math.random() * 2 + 11) * (height / 800); 
+                this.rotation = Math.random() * Math.PI * 2; this.rotationSpeed = (Math.random() - 0.5) * 0.03; this.isCut = false;
+                const healFruits = ['🍉', '🍇', '🍓', '🍌', '🍒', '🍑', '🍍', '🥝', '🍊', '🍈']; this.fruitEmoji = healFruits[Math.floor(Math.random() * healFruits.length)];
             }
-
-            update() {
-                if (this.isCut) return; 
-                this.x += this.vx * selectedGameSpeed;
-                this.y += this.vy * selectedGameSpeed;
-                this.vy += 0.12 * selectedGameSpeed; 
-                this.rotation += this.rotationSpeed * selectedGameSpeed;
-            }
-
+            update() { if (this.isCut) return; this.x += this.vx * selectedGameSpeed; this.y += this.vy * selectedGameSpeed; this.vy += 0.12 * selectedGameSpeed; this.rotation += this.rotationSpeed * selectedGameSpeed; }
             draw() {
-                if (this.isCut) return;
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-                
-                ctx.beginPath();
-                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = '#fca5a5'; 
-                ctx.fill();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#dc2626'; 
-                ctx.stroke();
-                
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = `900 ${this.radius * 0.8}px 'Noto Sans TC'`;
-                ctx.fillText(this.fruitEmoji, 0, 0); 
-                
-                ctx.restore();
+                if (this.isCut) return; ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fillStyle = '#fca5a5'; ctx.fill(); ctx.lineWidth = 3; ctx.strokeStyle = '#dc2626'; ctx.stroke();
+                ctx.fillStyle = '#FFFFFF'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = `900 ${this.radius * 0.8}px 'Noto Sans TC'`; ctx.fillText(this.fruitEmoji, 0, 0); ctx.restore();
             }
-
             cut(velocityVector) {
-                this.isCut = true;
-                speakWord(t('heal_speech'));
-                playSliceSound();
-                
-                for(let i=0; i<15; i++) {
-                    particles.push(new Particle(this.x, this.y, '#dc2626'));
-                }
-                splashTexts.push(new SplashText("+1 ❤️", this.x, this.y, '#dc2626'));
-                
-                if (lives < 3) {
-                    lives++;
-                    updateLivesDisplay();
-                }
+                this.isCut = true; speakWord(t('heal_speech')); playSliceSound(); for(let i=0; i<15; i++) particles.push(new Particle(this.x, this.y, '#dc2626'));
+                splashTexts.push(new SplashText("+1 ❤️", this.x, this.y, '#dc2626')); if (lives < 3) { lives++; updateLivesDisplay(); }
             }
         }
 
         class Particle {
             constructor(x, y, color, isExplosion = false) {
-                this.x = x;
-                this.y = y;
-                this.color = color;
-                this.radius = Math.random() * (isExplosion ? 8 : 5) + 3;
-                let angle = Math.random() * Math.PI * 2;
-                let speed = Math.random() * (isExplosion ? 10 : 5) + 2;
-                this.vx = Math.cos(angle) * speed;
-                this.vy = Math.sin(angle) * speed;
-                this.life = 1.0;
-                this.decay = isExplosion ? 0.03 : 0.02;
+                this.x = x; this.y = y; this.color = color; this.radius = Math.random() * (isExplosion ? 8 : 5) + 3;
+                let angle = Math.random() * Math.PI * 2; let speed = Math.random() * (isExplosion ? 10 : 5) + 2;
+                this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed; this.life = 1.0; this.decay = isExplosion ? 0.03 : 0.02;
             }
-            update() {
-                this.x += this.vx * selectedGameSpeed;
-                this.y += this.vy * selectedGameSpeed;
-                this.vy += 0.2 * selectedGameSpeed; 
-                this.life -= this.decay * selectedGameSpeed;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, this.life);
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                ctx.fill();
-                ctx.restore();
-            }
+            update() { this.x += this.vx * selectedGameSpeed; this.y += this.vy * selectedGameSpeed; this.vy += 0.2 * selectedGameSpeed; this.life -= this.decay * selectedGameSpeed; }
+            draw() { ctx.save(); ctx.globalAlpha = Math.max(0, this.life); ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = this.color; ctx.fill(); ctx.restore(); }
         }
 
         class SplashText {
-            constructor(text, x, y, color = '#fbbf24') {
-                this.text = text;
-                this.x = x;
-                this.y = y;
-                this.color = color;
-                this.life = 1.0;
-                this.vy = -2;
-            }
-            update() {
-                this.y += this.vy * selectedGameSpeed;
-                this.life -= 0.03 * selectedGameSpeed;
-            }
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = Math.max(0, this.life);
-                ctx.fillStyle = this.color; 
-                ctx.font = "900 36px 'Noto Sans TC'";
-                ctx.strokeStyle = '#000';
-                ctx.lineWidth = 4;
-                ctx.strokeText(this.text, this.x, this.y);
-                ctx.fillText(this.text, this.x, this.y);
-                ctx.restore();
-            }
+            constructor(text, x, y, color = '#fbbf24') { this.text = text; this.x = x; this.y = y; this.color = color; this.life = 1.0; this.vy = -2; }
+            update() { this.y += this.vy * selectedGameSpeed; this.life -= 0.03 * selectedGameSpeed; }
+            draw() { ctx.save(); ctx.globalAlpha = Math.max(0, this.life); ctx.fillStyle = this.color; ctx.font = "900 36px 'Noto Sans TC'"; ctx.strokeStyle = '#000'; ctx.lineWidth = 4; ctx.strokeText(this.text, this.x, this.y); ctx.fillText(this.text, this.x, this.y); ctx.restore(); }
         }
 
         function checkDifficultyProgress() {
-            if (score >= 15 && !gameFlags.bounce) {
-                gameFlags.bounce = true;
-                announce(t('bounce_mod'));
-            }
-            if (score >= 30 && !gameFlags.bomb) {
-                gameFlags.bomb = true;
-                announce(t('bomb_mod'));
-            }
-            if (score >= 50 && !gameFlags.hard) {
-                gameFlags.hard = true;
-                announce(t('hard_mod'));
-            }
+            if (score >= 15 && !gameFlags.bounce) { gameFlags.bounce = true; announce(t('bounce_mod')); }
+            if (score >= 30 && !gameFlags.bomb) { gameFlags.bomb = true; announce(t('bomb_mod')); }
+            if (score >= 50 && !gameFlags.hard) { gameFlags.hard = true; announce(t('hard_mod')); }
         }
 
-        function addTrailPoint(x, y) {
-            bladeTrail.push({x, y});
-            if (bladeTrail.length > MAX_TRAIL_LENGTH) {
-                bladeTrail.shift();
-            }
-            checkCollisions();
-        }
-
-        function clearTrail() {
-            bladeTrail = [];
-        }
-
+        function addTrailPoint(x, y) { bladeTrail.push({x, y}); if (bladeTrail.length > MAX_TRAIL_LENGTH) bladeTrail.shift(); checkCollisions(); }
+        function clearTrail() { bladeTrail = []; }
         function getPointerPos(e) {
-            const rect = canvas.getBoundingClientRect();
-            let clientX = e.clientX;
-            let clientY = e.clientY;
-            if (e.touches && e.touches.length > 0) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            }
-            return {
-                x: clientX - rect.left,
-                y: clientY - rect.top
-            };
+            const rect = canvas.getBoundingClientRect(); let clientX = e.clientX; let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) { clientX = e.touches[0].clientX; clientY = e.touches[0].clientY; }
+            return { x: clientX - rect.left, y: clientY - rect.top };
         }
 
-        canvas.addEventListener('mousedown', (e) => {
-            if (!isPlaying || isPaused) return;
-            isSwiping = true;
-            const pos = getPointerPos(e);
-            addTrailPoint(pos.x, pos.y);
-        });
-        canvas.addEventListener('mousemove', (e) => {
-            if (!isPlaying || !isSwiping || isPaused) return;
-            const pos = getPointerPos(e);
-            addTrailPoint(pos.x, pos.y);
-        });
-        window.addEventListener('mouseup', () => {
-            isSwiping = false;
-            clearTrail();
-        });
-
-        canvas.addEventListener('touchstart', (e) => {
-            if (!isPlaying || isPaused) return;
-            e.preventDefault();
-            isSwiping = true;
-            const pos = getPointerPos(e);
-            addTrailPoint(pos.x, pos.y);
-        }, {passive: false});
-        canvas.addEventListener('touchmove', (e) => {
-            if (!isPlaying || !isSwiping || isPaused) return;
-            e.preventDefault();
-            const pos = getPointerPos(e);
-            addTrailPoint(pos.x, pos.y);
-        }, {passive: false});
-        window.addEventListener('touchend', () => {
-            isSwiping = false;
-            clearTrail();
-        });
+        canvas.addEventListener('mousedown', (e) => { if (!isPlaying || isPaused) return; isSwiping = true; const pos = getPointerPos(e); addTrailPoint(pos.x, pos.y); });
+        canvas.addEventListener('mousemove', (e) => { if (!isPlaying || !isSwiping || isPaused) return; const pos = getPointerPos(e); addTrailPoint(pos.x, pos.y); });
+        window.addEventListener('mouseup', () => { isSwiping = false; clearTrail(); });
+        canvas.addEventListener('touchstart', (e) => { if (!isPlaying || isPaused) return; e.preventDefault(); isSwiping = true; const pos = getPointerPos(e); addTrailPoint(pos.x, pos.y); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { if (!isPlaying || !isSwiping || isPaused) return; e.preventDefault(); const pos = getPointerPos(e); addTrailPoint(pos.x, pos.y); }, {passive: false});
+        window.addEventListener('touchend', () => { isSwiping = false; clearTrail(); });
 
         function drawBlade() {
-            if (bladeTrail.length < 2) return;
-            
-            ctx.beginPath();
-            ctx.moveTo(bladeTrail[0].x, bladeTrail[0].y);
-            
-            for (let i = 1; i < bladeTrail.length; i++) {
-                ctx.lineTo(bladeTrail[i].x, bladeTrail[i].y);
-            }
-            
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.lineWidth = 10 * scaleFactor; 
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.stroke();
-            
-            ctx.lineWidth = 4 * scaleFactor;
-            ctx.strokeStyle = 'rgba(103, 232, 249, 1)';
-            ctx.stroke();
+            if (bladeTrail.length < 2) return; ctx.beginPath(); ctx.moveTo(bladeTrail[0].x, bladeTrail[0].y);
+            for (let i = 1; i < bladeTrail.length; i++) ctx.lineTo(bladeTrail[i].x, bladeTrail[i].y);
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.lineWidth = 10 * scaleFactor; ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)'; ctx.stroke();
+            ctx.lineWidth = 4 * scaleFactor; ctx.strokeStyle = 'rgba(103, 232, 249, 1)'; ctx.stroke();
         }
 
         function checkCollisions() {
-            if (bladeTrail.length < 2) return;
-            const p1 = bladeTrail[bladeTrail.length - 2];
-            const p2 = bladeTrail[bladeTrail.length - 1];
-            
-            const velocityVector = { x: p2.x - p1.x, y: p2.y - p1.y };
-
-            for (let i = 0; i < fruits.length; i++) {
-                let f = fruits[i];
-                if (f.isCut) continue;
-
-                const dist = distToSegment(f, p1, p2);
-                if (dist < f.radius) {
-                    f.cut(velocityVector);
-                }
-            }
+            if (bladeTrail.length < 2) return; const p1 = bladeTrail[bladeTrail.length - 2]; const p2 = bladeTrail[bladeTrail.length - 1]; const velocityVector = { x: p2.x - p1.x, y: p2.y - p1.y };
+            for (let i = 0; i < fruits.length; i++) { let f = fruits[i]; if (f.isCut) continue; const dist = distToSegment(f, p1, p2); if (dist < f.radius) f.cut(velocityVector); }
         }
 
         function distToSegment(p, v, w) {
-            const l2 = dist2(v, w);
-            if (l2 === 0) return Math.sqrt(dist2(p, v));
-            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-            t = Math.max(0, Math.min(1, t));
+            const l2 = dist2(v, w); if (l2 === 0) return Math.sqrt(dist2(p, v)); let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2; t = Math.max(0, Math.min(1, t));
             return Math.sqrt(dist2(p, { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) }));
         }
-        function dist2(v, w) {
-            return Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
-        }
+        function dist2(v, w) { return Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2); }
 
-        function updateLivesDisplay() {
-            let lifeIcons = "";
-            for(let i = 0; i < lives; i++) lifeIcons += "❤️";
-            for(let i = lives; i < 3; i++) lifeIcons += "🖤";
-            document.getElementById('livesDisplay').innerText = lifeIcons;
-        }
+        function updateLivesDisplay() { let lifeIcons = ""; for(let i = 0; i < lives; i++) lifeIcons += "❤️"; for(let i = lives; i < 3; i++) lifeIcons += "🖤"; document.getElementById('livesDisplay').innerText = lifeIcons; }
 
         function updateCollectionHUD() {
-            const modeText = document.getElementById('collectionModeText');
-            const counterWrapper = document.getElementById('collectionCounterWrapper');
-
-            if (currentLesson === 'custom') {
-                modeText.innerText = t('custom_mode');
-                modeText.classList.remove('hidden');
-                counterWrapper.classList.remove('hidden');
-            } else {
-                modeText.classList.add('hidden');
-                counterWrapper.classList.remove('hidden');
-            }
-
-            let collected = 0;
-            let total = currentVocabList.length;
-            let gridHtml = '';
-
+            const modeText = document.getElementById('collectionModeText'); const counterWrapper = document.getElementById('collectionCounterWrapper');
+            if (currentLesson === 'custom') { modeText.innerText = t('custom_mode'); modeText.classList.remove('hidden'); counterWrapper.classList.remove('hidden'); } else { modeText.classList.add('hidden'); counterWrapper.classList.remove('hidden'); }
+            let collected = 0; let total = currentVocabList.length; let gridHtml = '';
+            
             currentVocabList.forEach(w => {
-                let count = wordCollection[w] || 0;
-                if (count > 0) collected++;
+                let count = wordCollection[w] || 0; if (count > 0) collected++;
                 let statusClass = count > 0 ? "bg-green-900 border-green-500 text-green-200" : "bg-gray-800 border-gray-700 text-gray-500";
                 let badge = count > 0 ? `<span class="text-xs bg-green-600 text-white px-1.5 py-0.5 rounded-full ml-1">x${count}</span>` : `<span class="text-xs bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded-full ml-1">${t('uncollected')}</span>`;
+                let interactiveClass = count > 0 ? "cursor-pointer hover:bg-green-800 transition transform active:scale-95" : "";
+                let clickEvent = count > 0 ? `onclick="speakSentence('${w}')"` : "";
+                let speakerIcon = count > 0 ? `<span class="text-xs ml-1">🔊</span>` : "";
                 
-                gridHtml += `<div class="flex items-center justify-between p-2 rounded-lg border ${statusClass}">
-                    <span class="font-bold text-sm">${w}</span>
-                    ${badge}
-                </div>`;
+                gridHtml += `<div ${clickEvent} class="flex items-center justify-between p-2 rounded-lg border ${statusClass} ${interactiveClass}">
+                    <span class="font-bold text-sm md:text-base flex items-center gap-1">${w}${speakerIcon}</span>${badge}</div>`;
             });
-
-            document.getElementById('collectedCount').innerText = collected;
-            document.getElementById('totalCount').innerText = total;
-            document.getElementById('vocabGrid').innerHTML = gridHtml;
+            document.getElementById('collectedCount').innerText = collected; document.getElementById('totalCount').innerText = total; document.getElementById('vocabGrid').innerHTML = gridHtml;
         }
 
         function pickNewTargetWord() {
             let uncollected = currentVocabList.filter(w => !wordCollection[w]);
-            if (uncollected.length > 0) {
-                targetWord = uncollected[Math.floor(Math.random() * uncollected.length)];
-            } else {
-                targetWord = currentVocabList[Math.floor(Math.random() * currentVocabList.length)];
-            }
-            
-            updateTargetUI();
-            replayTargetAudio();
+            if (uncollected.length > 0) targetWord = uncollected[Math.floor(Math.random() * uncollected.length)];
+            else targetWord = currentVocabList[Math.floor(Math.random() * currentVocabList.length)];
+            updateTargetUI(); replayTargetAudio();
         }
 
         function updateTargetUI() {
-            const textSpan = document.getElementById('targetWordText');
-            textSpan.innerText = targetWord;
-            if (isTextHidden) {
-                textSpan.classList.add('blur-md');
-                textSpan.classList.remove('blur-none');
-            } else {
-                textSpan.classList.remove('blur-md');
-                textSpan.classList.add('blur-none');
-            }
+            if (!targetWord) return;
+            let info = wordDictionary[targetWord] || { zhuyin: "", pinyin: "", en: "" };
+            document.getElementById('targetZhuyin').innerText = info.zhuyin; document.getElementById('targetPinyin').innerText = info.pinyin;
+            document.getElementById('targetEnglish').innerText = currentLang === 'en' ? targetWord : info.en;
         }
 
-        function replayTargetAudio() {
-            if (targetWord) {
-                speakWord(targetWord);
-            }
-        }
-
-        function toggleWordVisibility() {
-            isTextHidden = !isTextHidden;
-            updateTargetUI();
-        }
+        function replayTargetAudio() { if (targetWord) speakWord(targetWord); }
 
         function toggleVocabModal() {
             const modal = document.getElementById('vocabModal');
-            modal.classList.toggle('hidden');
+            if (modal.classList.contains('hidden')) { modal.classList.remove('hidden'); modal.classList.add('flex'); } else { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         }
 
         function togglePause() {
-            if (!isPlaying) return;
-            isPaused = !isPaused;
-            if (isPaused) {
-                document.getElementById('pauseScreen').classList.remove('hidden');
-            } else {
-                document.getElementById('pauseScreen').classList.add('hidden');
-                gameLoop();
-            }
+            if (!isPlaying) return; isPaused = !isPaused;
+            if (isPaused) { document.getElementById('pauseScreen').classList.remove('hidden'); document.getElementById('pauseScreen').classList.add('flex'); } else { document.getElementById('pauseScreen').classList.add('hidden'); document.getElementById('pauseScreen').classList.remove('flex'); gameLoop(); }
         }
 
         function quitGame() {
-            isPaused = false;
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-            document.getElementById('pauseScreen').classList.add('hidden');
-            document.getElementById('gameControls').classList.add('hidden');
-            backToMenu();
+            isPaused = false; isPlaying = false; cancelAnimationFrame(animationId);
+            document.getElementById('pauseScreen').classList.add('hidden'); document.getElementById('pauseScreen').classList.remove('flex');
+            document.getElementById('gameControls').classList.add('hidden'); backToMenu();
         }
 
-        let frameCount = 0;
         function gameLoop() {
-            if (!isPlaying || isPaused) return;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            frameCount++;
-            
-            let baseRate = Math.max(30, 90 - Math.floor(score / 5)); 
-            let spawnRate = Math.max(10, Math.floor(baseRate / selectedGameSpeed));
+            if (!isPlaying || isPaused) return; ctx.clearRect(0, 0, width, height); frameCount++;
+            let baseRate = Math.max(30, 90 - Math.floor(score / 5)); let spawnRate = Math.max(10, Math.floor(baseRate / selectedGameSpeed));
 
             if (frameCount % spawnRate === 0) {
-                if (lives <= 0) {
-                    fruits.push(new HealFruit());
-                } else {
-                    let numToSpawn = Math.random() > 0.7 ? 2 : 1;
-                    if(score > 40 && Math.random() > 0.7) numToSpawn = 3;
-                    
+                if (lives <= 0) { fruits.push(new HealFruit()); } else {
+                    let numToSpawn = Math.random() > 0.7 ? 2 : 1; if(score > 40 && Math.random() > 0.7) numToSpawn = 3;
                     for(let i=0; i<numToSpawn; i++) {
-                        if (lives < 3 && Math.random() < 0.15) {
-                            fruits.push(new HealFruit());
-                        } else {
+                        if (lives < 3 && Math.random() < 0.15) { fruits.push(new HealFruit()); } else {
                             let bombChance = gameFlags.hard ? 0.25 : 0.15;
-                            if (gameFlags.bomb && Math.random() < bombChance) {
-                                fruits.push(new Bomb());
-                            } else {
+                            if (gameFlags.bomb && Math.random() < bombChance) { fruits.push(new Bomb()); } else {
                                 let spawnTarget = Math.random() < 0.5; 
-                                if (spawnTarget && targetWord) {
-                                    fruits.push(new WordFruit(targetWord));
-                                } else {
-                                    fruits.push(new WordFruit());
-                                }
+                                if (spawnTarget && targetWord) fruits.push(new WordFruit(targetWord)); else fruits.push(new WordFruit());
                             }
                         }
                     }
@@ -1479,200 +1196,62 @@
             }
 
             for (let i = fruits.length - 1; i >= 0; i--) {
-                let f = fruits[i];
-                f.update();
-                f.draw();
-                
-                if (f.isCut && (f.isBomb || f.isHeal)) {
-                    fruits.splice(i, 1);
-                    continue;
-                }
-
+                let f = fruits[i]; f.update(); f.draw();
+                if (f.isCut && (f.isBomb || f.isHeal)) { fruits.splice(i, 1); continue; }
                 if (f.y > height + f.radius * 2) {
-                    if (!f.isCut) {
-                        if (!f.isBomb && !f.isHeal) {
-                            if (f.word === targetWord) {
-                                lives--;
-                                if (lives < 0) lives = 0;
-                                combo = 0; 
-                                updateLivesDisplay();
-                                
-                                ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
-                                ctx.fillRect(0, 0, width, height);
-
-                                splashTexts.push(new SplashText(t('missed'), width/2, height - 100, '#FF3B30'));
-                            }
-                        }
+                    if (!f.isCut && !f.isBomb && !f.isHeal && f.word === targetWord) {
+                        lives--; if (lives < 0) lives = 0; combo = 0; updateLivesDisplay(); ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; ctx.fillRect(0, 0, width, height); splashTexts.push(new SplashText(t('missed'), width/2, height - 100, '#FF3B30'));
                     }
                     fruits.splice(i, 1);
                 }
             }
 
-            for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].update();
-                particles[i].draw();
-                if (particles[i].life <= 0) particles.splice(i, 1);
-            }
-
-            for (let i = splashTexts.length - 1; i >= 0; i--) {
-                splashTexts[i].update();
-                splashTexts[i].draw();
-                if (splashTexts[i].life <= 0) splashTexts.splice(i, 1);
-            }
-
-            drawBlade();
+            for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); particles[i].draw(); if (particles[i].life <= 0) particles.splice(i, 1); }
+            for (let i = splashTexts.length - 1; i >= 0; i--) { splashTexts[i].update(); splashTexts[i].draw(); if (splashTexts[i].life <= 0) splashTexts.splice(i, 1); }
+            drawBlade(); if (!isSwiping && bladeTrail.length > 0) bladeTrail.shift();
             
-            if (!isSwiping && bladeTrail.length > 0) {
-                bladeTrail.shift();
-            }
-
             if (announcement.life > 0) {
-                ctx.save();
-                let alpha = Math.min(1, announcement.life / 30);
-                ctx.globalAlpha = alpha;
-                ctx.fillStyle = '#fff';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.font = "900 36px 'Noto Sans TC'";
-                ctx.fillText(announcement.text, width / 2, height / 2);
-                ctx.restore();
-                announcement.life--;
+                ctx.save(); let alpha = Math.min(1, announcement.life / 30); ctx.globalAlpha = alpha; ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = "900 36px 'Noto Sans TC'"; ctx.fillText(announcement.text, width / 2, height / 2); ctx.restore(); announcement.life--;
             }
-
-            if (isPlaying && !isPaused) {
-                animationId = requestAnimationFrame(gameLoop);
-            }
+            if (isPlaying && !isPaused) animationId = requestAnimationFrame(gameLoop);
         }
 
         function startGame(lessonInput = 0) {
-            initToneAudio(); 
-
-            try {
-                if ('speechSynthesis' in window) {
-                    let silentUtterance = new SpeechSynthesisUtterance('');
-                    window.speechSynthesis.speak(silentUtterance);
-                }
-            } catch(e) {}
-
+            initToneAudio(); try { if ('speechSynthesis' in window) { let silentUtterance = new SpeechSynthesisUtterance(''); window.speechSynthesis.speak(silentUtterance); } } catch(e) {}
             if (Array.isArray(lessonInput) || lessonInput === 'custom') {
-                currentLesson = 'custom';
-                if (Array.isArray(lessonInput)) {
-                    currentCustomLessons = lessonInput;
-                }
-                currentVocabList = currentCustomLessons.flatMap(i => lessonData[i]);
-                currentVocabList = [...new Set(currentVocabList)];
-                wordCollection = {};
-                currentVocabList.forEach(w => wordCollection[w] = 0);
-                
-                document.getElementById('modalLessonPrefix').innerText = "";
-                document.getElementById('modalLessonNum').innerText = t('custom_win_text');
-                document.getElementById('modalLessonSuffix').innerText = currentLang === 'zh' ? "圖鑑" : " Collection";
-                
-                document.getElementById('vocabBtn').classList.remove('hidden');
-                updateCollectionHUD();
+                currentLesson = 'custom'; if (Array.isArray(lessonInput)) currentCustomLessons = lessonInput;
+                currentVocabList = currentCustomLessons.flatMap(i => lessonData[i]); currentVocabList = [...new Set(currentVocabList)]; wordCollection = {}; currentVocabList.forEach(w => wordCollection[w] = 0);
+                document.getElementById('modalLessonPrefix').innerText = ""; document.getElementById('modalLessonNum').innerText = t('custom_win_text'); document.getElementById('modalLessonSuffix').innerText = currentLang === 'zh' ? "圖鑑" : " Collection";
             } else {
-                currentLesson = lessonInput;
-                currentVocabList = lessonData[lessonInput];
-                wordCollection = {};
-                currentVocabList.forEach(w => wordCollection[w] = 0);
-                
-                document.getElementById('modalLessonPrefix').innerText = t('lesson_prefix');
-                document.getElementById('modalLessonNum').innerText = lessonInput;
-                document.getElementById('modalLessonSuffix').innerText = t('lesson_suffix_modal');
-                
-                document.getElementById('vocabBtn').classList.remove('hidden');
-                updateCollectionHUD();
+                currentLesson = lessonInput; currentVocabList = lessonData[lessonInput]; wordCollection = {}; currentVocabList.forEach(w => wordCollection[w] = 0);
+                document.getElementById('modalLessonPrefix').innerText = t('lesson_prefix'); document.getElementById('modalLessonNum').innerText = lessonInput; document.getElementById('modalLessonSuffix').innerText = t('lesson_suffix_modal');
             }
-
-            document.querySelector('#vocabModal .btn').innerText = t('continue_game');
-            document.querySelector('#vocabModal .btn').setAttribute('data-i18n', 'continue_game');
-
-            document.getElementById('startScreen').classList.add('hidden');
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('winScreen').classList.add('hidden');
-            document.getElementById('targetUI').classList.remove('hidden');
-            document.getElementById('gameControls').classList.remove('hidden');
-            document.querySelector('.lang-btn').classList.add('hidden');
-            
-            score = 0;
-            lives = 3;
-            combo = 0;
-            fruits = [];
-            particles = [];
-            splashTexts = [];
-            bladeTrail = [];
-            gameFlags = { bounce: false, bomb: false, hard: false };
-            announcement.life = 0;
-
-            document.getElementById('scoreDisplay').innerText = score;
-            updateLivesDisplay();
-            
-            isPlaying = true;
-            frameCount = 0;
-            
-            targetWord = "";
-            document.getElementById('targetWordText').innerText = t('ready');
-            setTimeout(() => pickNewTargetWord(), 1000);
-
-            gameLoop();
-        }
-
-        function resetGame() {
-            startGame(currentLesson);
+            document.getElementById('vocabBtn').classList.remove('hidden'); updateCollectionHUD(); document.querySelector('#vocabModal .btn').innerText = t('continue_game'); document.querySelector('#vocabModal .btn').setAttribute('data-i18n', 'continue_game');
+            document.getElementById('startScreen').classList.add('hidden'); document.getElementById('startScreen').classList.remove('flex'); document.getElementById('winScreen').classList.add('hidden'); document.getElementById('winScreen').classList.remove('flex');
+            document.getElementById('targetUI').classList.remove('hidden'); document.getElementById('gameControls').classList.remove('hidden'); document.querySelector('.lang-btn').classList.add('hidden');
+            score = 0; lives = 3; combo = 0; fruits = []; particles = []; splashTexts = []; bladeTrail = []; gameFlags = { bounce: false, bomb: false, hard: false }; announcement.life = 0; document.getElementById('scoreDisplay').innerText = score; updateLivesDisplay();
+            isPlaying = true; frameCount = 0; targetWord = ""; document.getElementById('targetZhuyin').innerText = ""; document.getElementById('targetPinyin').innerText = ""; document.getElementById('targetEnglish').innerText = t('ready');
+            setTimeout(() => pickNewTargetWord(), 1000); gameLoop();
         }
 
         function winGame() {
-            isPlaying = false;
-            cancelAnimationFrame(animationId);
-            document.getElementById('vocabBtn').classList.add('hidden');
-            document.getElementById('targetUI').classList.add('hidden');
-            document.getElementById('gameControls').classList.add('hidden');
-            
-            if (currentLesson === 'custom') {
-                document.getElementById('winLessonText').innerText = t('custom_win_text');
-                document.getElementById('nextLessonBtn').classList.add('hidden');
-            } else {
-                document.getElementById('winLessonText').innerText = currentLesson;
-                document.getElementById('nextLessonBtn').classList.remove('hidden');
-            }
-            
-            document.querySelector('#vocabModal .btn').innerText = t('close_btn');
-            document.querySelector('#vocabModal .btn').setAttribute('data-i18n', 'close_btn');
-
-            document.getElementById('winScreen').classList.remove('hidden');
-            document.querySelector('.lang-btn').classList.remove('hidden');
-            speakWord(t('win_speech'));
+            isPlaying = false; cancelAnimationFrame(animationId);
+            document.getElementById('vocabBtn').classList.add('hidden'); document.getElementById('targetUI').classList.add('hidden'); document.getElementById('gameControls').classList.add('hidden');
+            if (currentLesson === 'custom') { document.getElementById('winLessonText').innerText = t('custom_win_text'); document.getElementById('nextLessonBtn').classList.add('hidden'); } else { document.getElementById('winLessonText').innerText = currentLesson; document.getElementById('nextLessonBtn').classList.remove('hidden'); }
+            document.querySelector('#vocabModal .btn').innerText = t('close_btn'); document.querySelector('#vocabModal .btn').setAttribute('data-i18n', 'close_btn');
+            document.getElementById('winScreen').classList.remove('hidden'); document.getElementById('winScreen').classList.add('flex'); document.querySelector('.lang-btn').classList.remove('hidden'); speakWord(t('win_speech'));
         }
 
         function backToMenu() {
-            document.getElementById('gameOverScreen').classList.add('hidden');
-            document.getElementById('winScreen').classList.add('hidden');
-            document.getElementById('vocabModal').classList.add('hidden');
-            document.getElementById('vocabBtn').classList.add('hidden');
-            document.getElementById('targetUI').classList.add('hidden');
-            document.getElementById('gameControls').classList.add('hidden');
-            document.getElementById('startScreen').classList.remove('hidden');
-            document.querySelector('.lang-btn').classList.remove('hidden');
-            
-            ctx.fillStyle = '#1a202c';
-            ctx.fillRect(0, 0, width, height);
-            score = 0;
-            lives = 3;
-            combo = 0;
-            document.getElementById('scoreDisplay').innerText = score;
-            updateLivesDisplay();
+            document.getElementById('winScreen').classList.add('hidden'); document.getElementById('winScreen').classList.remove('flex');
+            document.getElementById('vocabModal').classList.add('hidden'); document.getElementById('vocabModal').classList.remove('flex');
+            document.getElementById('vocabBtn').classList.add('hidden'); document.getElementById('targetUI').classList.add('hidden'); document.getElementById('gameControls').classList.add('hidden');
+            document.getElementById('startScreen').classList.remove('hidden'); document.getElementById('startScreen').classList.add('flex'); document.querySelector('.lang-btn').classList.remove('hidden');
+            ctx.fillStyle = '#1a202c'; ctx.fillRect(0, 0, width, height); score = 0; lives = 3; combo = 0; document.getElementById('scoreDisplay').innerText = score; updateLivesDisplay();
         }
 
-        function nextLesson() {
-            let next = currentLesson + 1;
-            if (next > 12) {
-                next = 1; 
-            }
-            startGame(next);
-        }
-        
-        ctx.fillStyle = '#1a202c';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        function nextLesson() { let next = currentLesson + 1; if (next > 12) next = 1; startGame(next); }
+        ctx.fillStyle = '#1a202c'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     </script>
 </body>
 </html>
